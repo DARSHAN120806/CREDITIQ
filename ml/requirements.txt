@@ -1,0 +1,13 @@
+# Direct dependencies pinned to the validated Python 3.12 environment.
+pandas==3.0.1
+numpy==2.3.5
+scikit-learn==1.9.1
+xgboost==3.4.1
+lightgbm==4.7.0
+optuna==5.0.0
+shap==0.52.0
+matplotlib==3.11.2
+pyarrow==25.0.1
+joblib==1.6.0
+scipy==1.18.1
+pytest==9.1.1

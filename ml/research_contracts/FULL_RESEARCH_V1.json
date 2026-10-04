@@ -1,0 +1,298 @@
+{
+  "assumptions": [
+    "Dataset is the standard Kaggle Home Credit dataset as user asserted.",
+    "AMT_INCOME_TOTAL annual and AMT_ANNUITY monthly are research assumptions, not independently verified.",
+    "EXT_SOURCE values are accepted only as normalized application-record fields; provider identity and live availability are unknown.",
+    "Application snapshot is treated as the prediction-time record; TARGET horizon/population are not independently established."
+  ],
+  "categorical_features": [
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status"
+  ],
+  "cohort": "eligible CASH loan application_train rows only; application_test excluded",
+  "contract": "FULL_RESEARCH_V1",
+  "excluded_feature_families": [
+    "bureau and bureau_balance aggregates (DAYS_AVAILABLE absent; bureau-balance account mapping failures)",
+    "previous-application aggregates (availability at current application unverified)",
+    "installment aggregates (payment event identity and complete effective schedule unresolved)",
+    "POS and card snapshot aggregates (DAYS_AVAILABLE absent)",
+    "application demographics and region/document flags beyond the inherited Lite contract (fairness/proxy risk; not in this research version)"
+  ],
+  "excluded_source_datasets": [
+    "bureau.csv",
+    "bureau_balance.csv",
+    "previous_application.csv",
+    "installments_payments.csv",
+    "POS_CASH_balance.csv",
+    "credit_card_balance.csv"
+  ],
+  "feature_count": 28,
+  "feature_definitions": [
+    {
+      "definition": "-DAYS_BIRTH / 365.25.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "age_years",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "-DAYS_EMPLOYED / 365.25; Home Credit sentinel 365243 is missing.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "years_employed",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_INCOME_TOTAL; annual period is an authorized research assumption.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "annual_income",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_CREDIT from current cash-loan application.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "requested_amount",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_ANNUITY; monthly period is an authorized research assumption.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "quoted_monthly_payment",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "CNT_FAM_MEMBERS.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "household_size",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "CNT_CHILDREN.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "dependent_children",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "NAME_INCOME_TYPE mapped to existing canonical category vocabulary.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "employment_type",
+      "source_dataset": "application_train.csv",
+      "type": "categorical"
+    },
+    {
+      "definition": "NAME_EDUCATION_TYPE mapped to existing canonical category vocabulary.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "education_level",
+      "source_dataset": "application_train.csv",
+      "type": "categorical"
+    },
+    {
+      "definition": "OCCUPATION_TYPE mapped to canonical vocabulary; null becomes MISSING.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "occupation",
+      "source_dataset": "application_train.csv",
+      "type": "categorical"
+    },
+    {
+      "definition": "NAME_HOUSING_TYPE mapped to canonical vocabulary; null becomes MISSING.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "housing_status",
+      "source_dataset": "application_train.csv",
+      "type": "categorical"
+    },
+    {
+      "definition": "1 when normalized years_employed is missing; otherwise 0.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "employment_tenure_missing",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "quoted_monthly_payment / (annual_income / 12).",
+      "missing_values": "None in eligible research cohort.",
+      "name": "proposed_payment_income_ratio",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "requested_amount / annual_income.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "principal_income_ratio",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "annual_income / household_size.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "income_per_household_member",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "years_employed / age_years.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "employed_age_ratio",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "quoted_monthly_payment / requested_amount.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "payment_principal_ratio",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Raw normalized external-source score 1 as recorded on the application.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "EXT_SOURCE_1",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Raw normalized external-source score 2 as recorded on the application.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "EXT_SOURCE_2",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Raw normalized external-source score 3 as recorded on the application.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "EXT_SOURCE_3",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Indicator that EXT_SOURCE_1 is missing on the application.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "ext_source_1_missing",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Indicator that EXT_SOURCE_2 is missing on the application.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "ext_source_2_missing",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Indicator that EXT_SOURCE_3 is missing on the application.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "ext_source_3_missing",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_REQ_CREDIT_BUREAU_MON: inquiries in prior month excluding prior week.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "credit_bureau_inquiries_1m",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_REQ_CREDIT_BUREAU_QRT: inquiries in prior three months excluding prior month.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "credit_bureau_inquiries_3m",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_REQ_CREDIT_BUREAU_YEAR: inquiries in prior year excluding prior three months.",
+      "missing_values": "Preserved as null; imputation fitted on training folds only.",
+      "name": "credit_bureau_inquiries_12m",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "Indicator that all six source bureau-inquiry windows are absent.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "credit_bureau_inquiry_history_missing",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    },
+    {
+      "definition": "AMT_CREDIT divided by positive AMT_GOODS_PRICE.",
+      "missing_values": "None in eligible research cohort.",
+      "name": "loan_to_goods_price_ratio",
+      "source_dataset": "application_train.csv",
+      "type": "numeric"
+    }
+  ],
+  "features": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "EXT_SOURCE_1",
+    "EXT_SOURCE_2",
+    "EXT_SOURCE_3",
+    "ext_source_1_missing",
+    "ext_source_2_missing",
+    "ext_source_3_missing",
+    "credit_bureau_inquiries_1m",
+    "credit_bureau_inquiries_3m",
+    "credit_bureau_inquiries_12m",
+    "credit_bureau_inquiry_history_missing",
+    "loan_to_goods_price_ratio"
+  ],
+  "input_feature_source": "Application record snapshot only. No bureau/previous/installment/POS/card aggregates enter this contract.",
+  "model_trained": false,
+  "preprocessing": "Raw numeric nulls preserved; fit imputation/scaling/encoding only within training folds.",
+  "release_ready": false,
+  "required_raw_columns": [
+    "SK_ID_CURR",
+    "TARGET",
+    "NAME_CONTRACT_TYPE",
+    "DAYS_BIRTH",
+    "DAYS_EMPLOYED",
+    "AMT_INCOME_TOTAL",
+    "AMT_CREDIT",
+    "AMT_ANNUITY",
+    "CNT_FAM_MEMBERS",
+    "CNT_CHILDREN",
+    "NAME_INCOME_TYPE",
+    "NAME_EDUCATION_TYPE",
+    "OCCUPATION_TYPE",
+    "NAME_HOUSING_TYPE",
+    "EXT_SOURCE_1",
+    "EXT_SOURCE_2",
+    "EXT_SOURCE_3",
+    "AMT_REQ_CREDIT_BUREAU_HOUR",
+    "AMT_REQ_CREDIT_BUREAU_DAY",
+    "AMT_REQ_CREDIT_BUREAU_WEEK",
+    "AMT_REQ_CREDIT_BUREAU_MON",
+    "AMT_REQ_CREDIT_BUREAU_QRT",
+    "AMT_REQ_CREDIT_BUREAU_YEAR",
+    "AMT_GOODS_PRICE"
+  ],
+  "row_key": "SK_ID_CURR",
+  "scope": "RESEARCH_ONLY",
+  "target": {
+    "column": "TARGET",
+    "meaning": "Home Credit label as supplied; fixed prediction horizon is unverified",
+    "source": "application_train.csv"
+  },
+  "version": "full-research-v1.0.0"
+}

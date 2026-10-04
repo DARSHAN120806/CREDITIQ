@@ -1,0 +1,20 @@
+{
+  "synthetic": false,
+  "currency": "XXX",
+  "evidence": "REPLACE with verified data dictionary and adapter review references; XXX is not a production currency claim",
+  "annuity_monthly_verified": false,
+  "category_mapping_verified": false,
+  "cash_product_verified": false,
+  "schedule_complete": false,
+  "schedule_versions_resolved": false,
+  "payment_identity_verified": false,
+  "availability_verified": false,
+  "sources": {
+    "bureau": {"state": "UNAVAILABLE", "evidence": ""},
+    "bureau_balance": {"state": "UNAVAILABLE", "evidence": ""},
+    "previous_application": {"state": "UNAVAILABLE", "evidence": ""},
+    "installments_payments": {"state": "UNAVAILABLE", "evidence": ""},
+    "pos_cash_balance": {"state": "UNAVAILABLE", "evidence": ""},
+    "credit_card_balance": {"state": "UNAVAILABLE", "evidence": ""}
+  }
+}
