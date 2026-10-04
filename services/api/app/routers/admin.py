@@ -10,6 +10,7 @@ from app.schemas.applications import ApplicationView, ApplicationPage
 from app.services.users import user_view
 from app.services import applications as service
 from app.services.model_research import load_dashboard
+from app.services.customer_segmentation import load_dashboard as load_segmentation_dashboard
 
 router = APIRouter(prefix='/api/v1/admin', tags=['admin-read-only'], dependencies=[Depends(require_role('ADMIN'))])
 
@@ -49,3 +50,8 @@ def statistics(db: Session = Depends(get_session)):
 @router.get('/model-research')
 def model_research():
     return load_dashboard()
+
+
+@router.get('/customer-segmentation')
+def customer_segmentation():
+    return load_segmentation_dashboard()

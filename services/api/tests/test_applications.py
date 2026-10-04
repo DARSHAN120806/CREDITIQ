@@ -58,6 +58,7 @@ def test_ownership_and_admin_read_only(api, model):
         assert client.get(f'/api/v1/applications/{identity}{suffix}').status_code == 404
     assert client.get('/api/v1/admin/users').status_code == 403
     assert client.get('/api/v1/admin/model-research').status_code == 403
+    assert client.get('/api/v1/admin/customer-segmentation').status_code == 403
     with engine.begin() as c:
         c.execute(update(M.User).where(M.User.normalized_email == 'other@example.com').values(role='ADMIN'))
     assert submit(client).status_code == 403  # ADMIN is business-read-only, even through user routes.
@@ -73,6 +74,18 @@ def test_ownership_and_admin_read_only(api, model):
     assert len(dashboard['calibration']['bins']) == 20
     assert dashboard['shap']['top_features'][0]['feature'] == 'payment_principal_ratio'
     assert len(dashboard['ablation']) == 4
+    assert dashboard['xgboost_benchmark']['feature_count'] == 22
+    assert dashboard['xgboost_benchmark']['test_rows'] == 41733
+    assert [row['model'] for row in dashboard['xgboost_benchmark']['metrics']] == ['LightGBM', 'XGBoost']
+    segments = client.get('/api/v1/admin/customer-segmentation')
+    assert segments.status_code == 200, segments.text
+    segmentation = segments.json()
+    assert segmentation['mode'] == 'RESEARCH_ONLY' and segmentation['release_ready'] is False
+    assert segmentation['selected_k'] == 4
+    assert len(segmentation['selection_metrics']) == 9
+    assert len(segmentation['profiles']) == 4 and len(segmentation['pca']['points']) == 8000
+    assert segmentation['profiles'][0]['mean_credit_utilization'] is None
+    assert all('target' not in key.lower() for key in segmentation['profiles'][0])
     assert client.get('/api/v1/admin/applications').json()['total'] == 1
     assert client.get(f'/api/v1/admin/applications/{identity}').status_code == 200
     users = client.get('/api/v1/admin/users').json()['items']

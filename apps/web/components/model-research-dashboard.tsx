@@ -8,6 +8,14 @@ type MetricValues = { roc_auc:number; average_precision:number; brier_score:numb
 type Model = { name:string; model:string; status:string; run_id:string; feature_count:number; values:MetricValues };
 type Bin = { model:string; bin:number; mean_predicted_probability:number; observed_default_rate:number };
 type Feature = { feature:string; mean_abs_shap_raw_margin:number };
+type BenchmarkMetrics = MetricValues & {log_loss:number};
+type XGBoostData = {
+ run_id:string;baseline_run_id:string;feature_count:number;test_rows:number;calibration_method:string;
+ metrics:(BenchmarkMetrics & {model:string})[];metric_deltas:BenchmarkMetrics;
+ ranking:(BenchmarkMetrics & {model:string;rank:number})[];ranking_basis:string;evaluation_note:string;
+ calibration:{bins:Bin[];selection_basis:string;development_selection:{Calibration:string;Brier:number;ROC_AUC:number;AveragePrecision:number}[]};
+ shap:{interpretation:string;top_features:Feature[];importance:Feature[]};
+};
 type Dashboard = {
  mode:string; release_ready:boolean; metrics:Model[]; metric_deltas:MetricValues;
  calibration:{method:string;cohort:string;test_rows:number;bins:Bin[];summary:string};
@@ -16,6 +24,7 @@ type Dashboard = {
  ablation:{variant:string;feature_count:number;roc_auc:number;average_precision:number;brier_score:number;evaluation_cohort:string}[];
  registry:{name:string;version:string;feature_count:number;training_date:string;calibration_method:string;dataset_size:number;status:string}[];
  limitations:string[]; ablation_note:string; shap_note:string;
+ xgboost_benchmark?:XGBoostData|null;
 };
 
 const metricLabels:{key:keyof MetricValues;label:string;better:'higher'|'lower'}[]=[
@@ -28,13 +37,34 @@ const score=(value:number)=>value.toFixed(4);
 
 function ReliabilityChart({model,bins}:{model:string;bins:Bin[]}) {
  const data=bins.filter(row=>row.model===model);
- return <section className="panel research-chart-panel"><h3>{model==='Lite'?'Lite':'FULL_RESEARCH_V1_NO_EXT'}</h3><div className="chart" role="img" aria-label={`${model} reliability curve, predicted probability versus observed event rate`}>
+ return <section className="panel research-chart-panel"><h3>{model}</h3><div className="chart" role="img" aria-label={`${model} reliability curve, predicted probability versus observed event rate`}>
   <ResponsiveContainer width="100%" height="100%"><LineChart data={data} margin={{top:12,right:16,bottom:16,left:0}}>
    <CartesianGrid strokeDasharray="3 3"/><XAxis type="number" dataKey="mean_predicted_probability" domain={[0,'dataMax']} tickFormatter={percent} name="Mean predicted probability"/><YAxis type="number" domain={[0,'dataMax']} tickFormatter={percent} name="Observed outcome rate"/><Tooltip formatter={(value)=>percent(Number(value))}/>
    <Line dataKey="mean_predicted_probability" name="Perfect calibration" stroke="#94a3b8" strokeDasharray="5 5" dot={false} isAnimationActive={false}/>
    <Line dataKey="observed_default_rate" name="Observed rate" stroke={model==='Lite'?'#0f766e':'#6366f1'} strokeWidth={3} dot={{r:3}} isAnimationActive={false}/>
   </LineChart></ResponsiveContainer>
  </div><p className="muted">Ten saved test-set bins · x: predicted probability · y: observed rate.</p></section>;
+}
+
+function XGBoostBenchmark({data}:{data:XGBoostData}) {
+ const labels=[...metricLabels,{key:'log_loss' as const,label:'Log Loss',better:'lower' as const}];
+ const [lightgbm,xgboost]=data.metrics;
+ return <section className="panel" aria-label="XGBoost research benchmark">
+  <div className="section-heading"><div><h2>XGBoost research benchmark</h2><p className="muted">FULL_RESEARCH_V1_NO_EXT · {data.feature_count} identical features · {data.test_rows.toLocaleString()} paired test applicants</p></div></div>
+  <div className="notice research-notice">{data.evaluation_note}</div>
+  <p className="muted">XGBoost run <code>{data.run_id}</code> · LightGBM run <code>{data.baseline_run_id}</code> · XGBoost calibration: {data.calibration_method}</p>
+  <h3>LightGBM vs XGBoost</h3>
+  <div className="tablewrap"><table className="research-table"><thead><tr><th>Metric</th><th>LightGBM</th><th>XGBoost</th><th>Delta · XGBoost − LightGBM</th><th>Direction</th></tr></thead><tbody>{labels.map(({key,label,better})=><tr key={key}><th scope="row">{label}</th><td>{lightgbm[key].toFixed(6)}</td><td>{xgboost[key].toFixed(6)}</td><td>{data.metric_deltas[key]>0?'+':''}{data.metric_deltas[key].toFixed(6)}</td><td>{better==='higher'?'Higher is better':'Lower is better'}</td></tr>)}</tbody></table></div>
+  <h3>Research model ranking</h3><p className="muted">{data.ranking_basis}</p>
+  <div className="tablewrap"><table><thead><tr><th>Rank</th><th>Research model</th><th>Brier</th><th>ROC-AUC</th></tr></thead><tbody>{data.ranking.map(row=><tr key={row.model}><td>#{row.rank}</td><th scope="row">{row.model}</th><td>{row.brier_score.toFixed(6)}</td><td>{row.roc_auc.toFixed(6)}</td></tr>)}</tbody></table></div>
+  <p className="muted">Ranking summarizes point estimates. It does not establish statistical significance, promote a model, or authorize lending decisions.</p>
+  <h3>Benchmark calibration</h3><p>{data.calibration.selection_basis}. Selected: {data.calibration_method}.</p>
+  <div className="research-chart-grid"><ReliabilityChart model="LightGBM" bins={data.calibration.bins}/><ReliabilityChart model="XGBoost" bins={data.calibration.bins}/></div>
+  <details className="research-details"><summary>XGBoost development calibration comparison</summary><div className="tablewrap"><table><thead><tr><th>Method</th><th>Development Brier</th><th>Development ROC-AUC</th><th>Development AP</th></tr></thead><tbody>{data.calibration.development_selection.map(row=><tr key={row.Calibration}><td>{row.Calibration}</td><td>{row.Brier.toFixed(6)}</td><td>{row.ROC_AUC.toFixed(6)}</td><td>{row.AveragePrecision.toFixed(6)}</td></tr>)}</tbody></table></div></details>
+  <h3>XGBoost SHAP importance</h3><p>{data.shap.interpretation}</p>
+  <div className="research-shap-grid"><div className="research-shap-chart" role="img" aria-label="XGBoost top 20 native Tree SHAP feature importance"><ResponsiveContainer width="100%" height="100%"><BarChart data={data.shap.top_features} layout="vertical" margin={{top:8,right:22,bottom:8,left:22}}><CartesianGrid horizontal={false} strokeDasharray="3 3"/><XAxis type="number"/><YAxis type="category" dataKey="feature" width={205} tick={{fontSize:11}}/><Tooltip formatter={value=>Number(value).toFixed(4)}/><Bar dataKey="mean_abs_shap_raw_margin" name="Mean |SHAP|" fill="#6366f1" isAnimationActive={false}/></BarChart></ResponsiveContainer></div>
+  <div className="tablewrap research-feature-table"><table><thead><tr><th>Rank</th><th>Feature</th><th>Mean |SHAP|</th></tr></thead><tbody>{data.shap.top_features.map((row,index)=><tr key={row.feature}><td>{index+1}</td><td>{row.feature}</td><td>{row.mean_abs_shap_raw_margin.toFixed(4)}</td></tr>)}</tbody></table></div></div>
+ </section>;
 }
 
 export default function ModelResearchDashboard(){
@@ -47,12 +77,14 @@ export default function ModelResearchDashboard(){
   <div className="page-heading"><div><div className="eyebrow">Admin · Model evaluation</div><h1>Model Research Dashboard</h1><p>Side-by-side diagnostics from saved model runs. This page does not score applications.</p></div><span className="badge research-only">RESEARCH_ONLY · release_ready=false</span></div>
   <div className="notice research-notice">FULL_RESEARCH_V1_NO_EXT remains RESEARCH_ONLY. Neither model comparison nor research metrics are production approval evidence.</div>
 
-  <section className="panel"><div className="section-heading"><div><h2>Model overview</h2><p className="muted">Paired evaluation on the same untouched final-test cohort · {data.calibration.test_rows.toLocaleString()} applicants</p></div></div>
+  <section className="panel"><div className="section-heading"><div><h2>Model overview</h2><p className="muted">Paired evaluation on the same saved test cohort · {data.calibration.test_rows.toLocaleString()} applicants</p></div></div>
    <div className="tablewrap"><table className="research-table"><thead><tr><th>Metric</th><th>Lite · 17 features</th><th>Research · 22 features</th><th>Delta · research − Lite</th><th>Direction</th></tr></thead><tbody>{metricLabels.map(({key,label,better})=>{const delta=data.metric_deltas[key];return <tr key={key}><th scope="row">{label}</th><td>{score(lite.values[key])}</td><td>{score(research.values[key])}</td><td className={delta===0?'':(delta>0)===(better==='higher')?'delta-good':'delta-neutral'}>{delta>0?'+':''}{score(delta)}</td><td>{better==='higher'?'Higher is better':'Lower is better'}</td></tr>;})}<tr><th scope="row">Feature count</th><td>{lite.feature_count}</td><td>{research.feature_count}</td><td>+{research.feature_count-lite.feature_count}</td><td>Research contract size</td></tr></tbody></table></div>
    <div className="research-model-status"><div><strong>Lite</strong><span>{lite.status}</span><code>{lite.run_id}</code></div><div><strong>FULL_RESEARCH_V1_NO_EXT</strong><span>{research.status}</span><code>{research.run_id}</code></div></div>
   </section>
 
-  <section className="panel"><div className="section-heading"><div><h2>Calibration analysis</h2><p className="muted">Saved reliability bins from the paired, untouched final-test cohort. Calibration: {data.calibration.method}.</p></div></div><p>{data.calibration.summary}</p>
+  {data.xgboost_benchmark&&<XGBoostBenchmark data={data.xgboost_benchmark}/>}
+
+  <section className="panel"><div className="section-heading"><div><h2>Calibration analysis</h2><p className="muted">Saved reliability bins from the paired test cohort. Calibration: {data.calibration.method}.</p></div></div><p>{data.calibration.summary}</p>
    <div className="research-chart-grid"><ReliabilityChart model="Lite" bins={data.calibration.bins}/><ReliabilityChart model="FULL_RESEARCH_V1_NO_EXT" bins={data.calibration.bins}/></div>
    <details className="research-details"><summary>Reliability bin values</summary><div className="tablewrap"><table><thead><tr><th>Model</th><th>Bin</th><th>Mean predicted probability</th><th>Observed rate</th></tr></thead><tbody>{data.calibration.bins.map(row=><tr key={`${row.model}-${row.bin}`}><td>{row.model}</td><td>{row.bin}</td><td>{percent(row.mean_predicted_probability)}</td><td>{percent(row.observed_default_rate)}</td></tr>)}</tbody></table></div></details>
   </section>

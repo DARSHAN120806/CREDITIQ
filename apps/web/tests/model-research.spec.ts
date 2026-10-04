@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const bins=(model:string,offset:number)=>Array.from({length:10},(_,i)=>({model,bin:i+1,mean_predicted_probability:.02+i*.02+offset,observed_default_rate:.025+i*.02}));
 const features=[
@@ -64,4 +66,40 @@ test('admin model research dashboard renders saved comparisons and captures resp
  await page.screenshot({path:'test-results/model-research-desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});
  await page.screenshot({path:'test-results/model-research-mobile.png',fullPage:true});
+});
+
+test('admin model research dashboard shows the saved XGBoost benchmark and descriptive ranking',async({page})=>{
+ const root=resolve(process.cwd(),'../../ml/research_output/xgboost_full_research_v1_no_ext');
+ const runId=JSON.parse(readFileSync(resolve(root,'latest.json'),'utf8')).run_id;
+ const run=resolve(root,runId);
+ const meta=JSON.parse(readFileSync(resolve(run,'metadata.json'),'utf8'));
+ const calibration=JSON.parse(readFileSync(resolve(run,'calibration_results.json'),'utf8'));
+ const importance=readFileSync(resolve(run,'shap_feature_importance.csv'),'utf8').trim().split(/\r?\n/).slice(1).map(line=>{
+  const [feature,value]=line.split(',');return {feature,mean_abs_shap_raw_margin:Number(value)};
+ });
+ const comparison=['LightGBM','XGBoost'].map(model=>({model,...meta.test_metrics[model]}));
+ const benchmark={run_id:runId,baseline_run_id:meta.baseline_run_id,feature_count:22,test_rows:meta.split_sizes.test,
+  calibration_method:meta.calibration_method,metrics:comparison,metric_deltas:meta.metric_deltas,
+  ranking:meta.research_ranking.map((model:string,index:number)=>({rank:index+1,model,...meta.test_metrics[model]})),
+  ranking_basis:meta.ranking_basis,evaluation_note:meta.test_evaluation_note,
+  calibration:{selection_basis:calibration.selection_basis,development_selection:calibration.development_selection,
+   bins:['LightGBM','XGBoost'].flatMap(model=>calibration[model].map((row:object,index:number)=>({model,bin:index+1,...row})))},
+  shap:{interpretation:meta.shap_interpretation,importance,top_features:importance.slice(0,20)}};
+ await page.route('**/api/v1/**',async route=>{
+  const path=new URL(route.request().url()).pathname;
+  if(path==='/api/v1/me')return route.fulfill({json:{id:'admin-1',email:'admin@example.test',full_name:'Research Admin',role:'ADMIN',permissions:[]}});
+  if(path==='/api/v1/admin/model-research')return route.fulfill({json:{...researchData,xgboost_benchmark:benchmark}});
+  return route.fulfill({status:404,json:{detail:'not mocked'}});
+ });
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/admin/model-research');
+ const section=page.getByRole('region',{name:'XGBoost research benchmark'});
+ await expect(section.getByRole('heading',{name:'LightGBM vs XGBoost'})).toBeVisible();
+ await expect(section.getByRole('heading',{name:'Research model ranking'})).toBeVisible();
+ await expect(section.getByText(meta.test_evaluation_note)).toBeVisible();
+ await expect(section.getByText(meta.test_metrics.XGBoost.roc_auc.toFixed(6),{exact:true}).first()).toBeVisible();
+ await expect(section.getByRole('img',{name:'XGBoost top 20 native Tree SHAP feature importance'})).toBeVisible();
+ await section.screenshot({path:'test-results/xgboost-research-desktop.png'});
+ await page.setViewportSize({width:390,height:844});
+ await section.screenshot({path:'test-results/xgboost-research-mobile.png'});
 });
