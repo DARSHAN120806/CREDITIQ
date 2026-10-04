@@ -12,6 +12,7 @@ import ConsumerDashboard from "./consumer-dashboard";
 import InstallmentWorkspace from './installment-workspace';
 import BorrowingPlanner from './borrowing-planner';
 import ModelResearchDashboard from './model-research-dashboard';
+import CustomerSegmentationDashboard from './customer-segmentation-dashboard';
 
 type Stats = {total_users:number;total_applications:number;total_predictions:number};
 const money = formatCurrency;
@@ -38,11 +39,12 @@ export default function Workspace() {
  useEffect(()=>{if(publicPage)return;let active=true;setLoading(true);setError("");api<User>("/me").then(u=>{if(active){setUser(u);if(admin&&u.role!=="ADMIN")router.replace("/dashboard");}}).catch(e=>{if(active){if(e instanceof ApiError&&e.status===401)router.replace(admin?"/admin/login":"/login");else setError(e.message);}}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[path,publicPage,admin,router]);
  if(publicPage)return <AuthPage key={path} register={path==="/register"} admin={path==="/admin/login"}/>;
  if(loading||!user||admin&&user.role!=="ADMIN")return <main className="workspace"><p role="status">{error?"Unable to open workspace.":"Opening your workspace…"}</p><ErrorBox message={error}/><Link href="/login">Return to sign in</Link></main>;
- const links=admin?[["/admin","Overview"],["/admin/users","Users"],["/admin/applications","Applications"],["/admin/statistics","Statistics"],["/admin/installments","Repayment insights"],["/admin/model-research","Model research"]]:[["/dashboard","Dashboard"],["/applications/new","New application"],["/applications","Application history"],["/borrowing-planner","Borrowing Planner"],["/profile","Profile"],["/financial-analysis","Repayment Intelligence"]];
+ const links=admin?[["/admin","Overview"],["/admin/users","Users"],["/admin/applications","Applications"],["/admin/statistics","Statistics"],["/admin/installments","Repayment insights"],["/admin/model-research","Model research"],["/admin/customer-segmentation","Customer segments"]]:[["/dashboard","Dashboard"],["/applications/new","New application"],["/applications","Application history"],["/borrowing-planner","Borrowing Planner"],["/profile","Profile"],["/financial-analysis","Repayment Intelligence"]];
  async function logout(){try{await api("/auth/logout",{method:"POST"});setUser(null);router.replace("/login");}catch(e){setError((e as Error).message);}}
  let content;
  if(path==="/dashboard")content=<ConsumerDashboard user={user}/>;
  else if(path==="/admin/model-research")content=<ModelResearchDashboard/>;
+ else if(path==="/admin/customer-segmentation")content=<CustomerSegmentationDashboard/>;
  else if(path==="/applications/new")content=<NewApplication/>;
  else if(path==="/applications"||path==="/admin/applications")content=<Applications admin={admin}/>;
  else if(/^\/(admin\/)?applications\/[^/]+(\/result)?$/.test(path))content=<Details id={path.split("/")[admin?3:2]} admin={admin} resultOnly={path.endsWith("/result")}/>;

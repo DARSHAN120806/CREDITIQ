@@ -31,6 +31,7 @@ p { color: var(--muted); line-height: 1.6; }
 .btn { background: var(--accent); color: white; padding: 11px 18px; border: none; border-radius: 8px; font-weight: 600; display: inline-block; }
 .btn.secondary { color: var(--ink); border: 1px solid var(--line); background: white; }
 .notice { padding: 14px 18px; background: #e9f4ef; color: #245a48; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+.notice.segment-quality { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
 .error { padding: 14px; border-radius: 8px; background: #fff0ee; color: #9e352c; margin: 16px 0; }
 .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; }
@@ -131,3 +132,9 @@ label { font-weight:550; color:#334155; }input,select { border-color:#dbe3eb; pa
 .research-ablation-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:18px; }.research-ablation-grid .chart { height:300px; }.research-details { margin-top:18px; }.research-details summary { cursor:pointer; font-weight:650; padding:8px 0; }.research-limitations ul { margin:4px 0 0; padding-left:22px; color:#7c2d12; line-height:1.8; }
 @media(max-width:1100px){.research-ablation-grid { grid-template-columns:1fr; }.research-shap-grid { grid-template-columns:1fr; }.research-shap-chart { height:580px; }}
 @media(max-width:800px){.research-chart-grid,.research-contract-grid,.research-model-status { grid-template-columns:1fr; }.research-table { min-width:760px; }.research-ablation-grid .chart { height:280px; }}
+
+/* Customer segmentation research: neutral clusters, descriptive profiles, no risk labels. */
+.segmentation-dashboard { display:grid; gap:20px; }.segment-cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }.segment-cards .card { position:relative; padding-top:20px; }.segment-swatch { display:block; width:32px; height:5px; border-radius:5px; margin-bottom:14px; }.segment-cards .metric { font-size:30px; }.segment-cards p { margin:5px 0; font-size:13px; }.segment-description { color:#475569; line-height:1.55; min-height:42px; }
+.segment-table { min-width:1150px; }.segment-table th[scope="row"] { font-size:12px; color:#334155; letter-spacing:0; text-transform:none; white-space:nowrap; }.segment-table td { font-size:12px; white-space:nowrap; }.segment-pca-chart { width:100%; height:420px; }.segment-legend { display:flex; justify-content:center; flex-wrap:wrap; gap:12px 20px; margin:14px 0; font-size:12px; }.segment-legend span { display:flex; align-items:center; gap:7px; }.segment-legend i { width:9px; height:9px; border-radius:50%; }.segment-metrics { min-width:820px; }.segment-metrics .selected-k { background:#f0fdfa; font-weight:650; }.segmentation-limitations ul { margin:4px 0 0; padding-left:22px; color:#7c2d12; line-height:1.8; }
+@media(max-width:1000px){.segment-cards { grid-template-columns:repeat(2,minmax(0,1fr)); }}
+@media(max-width:550px){.segment-cards { grid-template-columns:1fr; }.segment-pca-chart { height:330px; }}
