@@ -30,18 +30,18 @@ test('user registration, real prediction, history, persistence, guards and logou
   await page.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Get my assessment' }).click();
   await expect(page).toHaveURL(/applications\/.+\/result/);
-  await expect(page.getByText('Risk Probability')).toBeVisible();
+  await expect(page.getByText('Indicative model estimate')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Recommended Loan Range' })).toBeVisible();
   await page.screenshot({ path: 'test-results/phase2-result.png', fullPage: true });
   await context.clearCookies({ name: 'creditiq_access' });
   await page.reload(); // Exercises refresh through the Next proxy with HttpOnly refresh cookie.
-  await expect(page.getByText('Risk Probability')).toBeVisible();
+  await expect(page.getByText('Indicative model estimate')).toBeVisible();
   await page.getByRole('link', { name: 'Application details', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Submitted information' })).toBeVisible();
   await expect(page.getByText('Assessment completed', { exact: true })).toBeVisible();
   await page.goto('/applications');
   await expect(page.locator('tbody tr')).toHaveCount(1);
-  await expect(page.getByRole('columnheader', {name:'Financial Health Score'})).toBeVisible();
+  await expect(page.getByRole('columnheader', {name:'Affordability score'})).toBeVisible();
   await page.screenshot({ path:'test-results/phase2-history.png', fullPage:true });
   await page.goto('/dashboard');
   await expect(page.getByRole('heading', {name:'Risk Distribution'})).toBeVisible();
@@ -85,7 +85,7 @@ test('administrator can view users, applications and statistics', async ({ page,
   await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
   await page.goto('/admin/applications');
   await page.locator('tbody a').first().click();
-  await expect(page.getByText('Risk Probability')).toBeVisible();
+  await expect(page.getByText('Indicative model estimate')).toBeVisible();
   await expect(page.getByRole('button', { name: /approve|reject|override/i })).toHaveCount(0);
   await page.goto('/admin/statistics');
   await expect(page.getByRole('heading', { name: 'Workspace statistics' })).toBeVisible();

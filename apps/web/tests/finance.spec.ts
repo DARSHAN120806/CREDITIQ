@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { affordabilityLevel, currency, estimateEmi, financialHealth, financialInsights, formatCurrency, riskLevel } from '../lib/finance';
+import { affordabilityLevel, currency, estimateEmi, affordabilityScore, MODEL_BAND_CUTOFFS, financialInsights, formatCurrency, riskLevel } from '../lib/finance';
 import { dashboardAnalytics, loadAllApplications, Application } from '../lib/applications';
 
-for(const [probability,level] of [[0,'Low'],[.04999999,'Low'],[.05,'Moderate'],[.14999999,'Moderate'],[.15,'High'],[1,'High']] as const) {
+for(const [probability,level] of [[0,'Low'],[MODEL_BAND_CUTOFFS.lowBelow-1e-9,'Low'],[MODEL_BAND_CUTOFFS.lowBelow,'Moderate'],[MODEL_BAND_CUTOFFS.highAt-1e-9,'Moderate'],[MODEL_BAND_CUTOFFS.highAt,'High'],[1,'High']] as const) {
   test(`risk boundary ${probability} is ${level}`,()=>expect(riskLevel(probability)).toBe(level));
 }
-test('health score and invalid probability handling',()=>{
-  expect(financialHealth(.125)).toBe(87.5);
+test('affordability score and invalid probability handling',()=>{
+  expect(affordabilityScore(.125)).toBe(100);
   for(const value of [NaN,Infinity,-.1,1.01]) expect(()=>riskLevel(value)).toThrow();
 });
 test('currency is presentation only and invalid amounts are unavailable',()=>{
@@ -15,10 +15,10 @@ test('currency is presentation only and invalid amounts are unavailable',()=>{
   expect(formatCurrency(null)).toBe('—');expect(formatCurrency(NaN)).toBe('—');
 });
 test('affordability boundaries are inclusive at 20 and 40 percent',()=>{
-  expect(affordabilityLevel(.19999)).toBe('Comfortable');
-  expect(affordabilityLevel(.2)).toBe('Manageable');
-  expect(affordabilityLevel(.4)).toBe('Manageable');
-  expect(affordabilityLevel(.40001)).toBe('Aggressive');
+  expect(affordabilityLevel(.19999)).toBe('Low');
+  expect(affordabilityLevel(.2)).toBe('Low');
+  expect(affordabilityLevel(.4)).toBe('Moderate');
+  expect(affordabilityLevel(.40001)).toBe('High');
 });
 test('EMI and inverse principal calculations agree at 12 percent',()=>{
   expect(estimateEmi(450000,36)).toBeCloseTo(14946.44,2);
@@ -26,7 +26,7 @@ test('EMI and inverse principal calculations agree at 12 percent',()=>{
   const insight=financialInsights(600000,450000,36,14946.44)!;
   expect(insight.monthlyIncome).toBe(50000);
   expect(insight.ratio).toBeCloseTo(.2989288,7);
-  expect(insight.assessment).toBe('Manageable');
+  expect(insight.assessment).toBe('Moderate');
   expect(insight.recommendedMaxEmi).toBe(15000);
   expect(estimateEmi(insight.ranges[2].max,36)).toBeCloseTo(15000,8);
   expect(insight.ranges[0].max).toBe(insight.ranges[1].min);
@@ -44,10 +44,10 @@ function app(id:string,p:number,date:string):Application {
     result:{probability:p,risk_score:p*100,risk_band:'unchanged',credit_health_index:100*(1-p),recommendation:'MANUAL_REVIEW',model_version:'unchanged',scored_at:date,quality_flags:[]}};
 }
 test('analytics groups dates chronologically and averages actual scores',()=>{
-  const data=dashboardAnalytics([app('a',.2,'2026-10-02T01:00:00Z'),app('b',.01,'2026-10-01T01:00:00Z'),app('c',.1,'2026-10-01T02:00:00Z')]);
-  expect(data.total).toBe(3);expect(data.average).toBeCloseTo((80+99+90)/3);
+  const data=dashboardAnalytics([app('a',.2,'2026-10-02T01:00:00Z'),app('b',.01,'2026-10-01T01:00:00Z'),app('c',.07,'2026-10-01T02:00:00Z')]);
+  expect(data.total).toBe(3);expect(data.average).toBe(100);
   expect(data.distribution.map(d=>d.value)).toEqual([1,1,1]);
-  expect(data.trend.map(d=>[d.date,d.applications,d.health])).toEqual([['2026-10-01',2,94.5],['2026-10-02',1,80]]);
+  expect(data.trend.map(d=>[d.date,d.applications,d.health])).toEqual([['2026-10-01',2,100],['2026-10-02',1,100]]);
   expect(dashboardAnalytics([]).average).toBeNull();
 });
 test('dashboard loads beyond the first page without changing API records',async()=>{

@@ -4,22 +4,30 @@ export function formatCurrency(value: number | string | null | undefined): strin
   if (value === null || value === undefined || value === "" || !Number.isFinite(Number(value))) return "—";
   return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 0 }).format(Number(value));
 }
+// Presentation bands: NumPy linear 33rd/66th percentiles of calibrated Lite probabilities
+// on 27,822 reserved policy-validation applicants in splits.json (not the final test set).
+// Run 20261002T140817Z-045430a7; features_lite_37489e0c27416f0e.parquet.
+// Relative historical bands, not lending thresholds; no stored policy/model values change.
+export const MODEL_BAND_CUTOFFS = { lowBelow: 0.050386401618192744, highAt: 0.08841984944398855 } as const;
+export type RiskLevel = "Low" | "Moderate" | "High";
 export function riskLevel(probability: number): "Low" | "Moderate" | "High" {
   if (!Number.isFinite(probability) || probability < 0 || probability > 1) throw new Error("Invalid probability");
-  return probability < 0.05 ? "Low" : probability < 0.15 ? "Moderate" : "High";
+  return probability < MODEL_BAND_CUTOFFS.lowBelow ? "Low" : probability < MODEL_BAND_CUTOFFS.highAt ? "Moderate" : "High";
 }
-export function financialHealth(probability: number): number {
-  riskLevel(probability);
-  return Math.round((1 - probability) * 10000) / 100;
+export function affordabilityScore(ratio: number): number {
+  if (!Number.isFinite(ratio) || ratio < 0) throw new Error("Invalid EMI ratio");
+  if (ratio <= 0.2) return 100;
+  if (ratio <= 0.4) return 100 - (ratio - 0.2) * 250;
+  return Math.max(0, 50 - (ratio - 0.4) * (50 / 0.6));
 }
 export function estimateEmi(principal: number, months: number, annualRate = 0.12): number {
   if (!Number.isFinite(principal) || principal <= 0 || !Number.isInteger(months) || months < 1 || !Number.isFinite(annualRate) || annualRate < 0) throw new Error("Invalid loan inputs");
   const rate = annualRate / 12;
   return rate === 0 ? principal / months : principal * rate / (1 - Math.pow(1 + rate, -months));
 }
-export function affordabilityLevel(ratio: number): "Comfortable" | "Manageable" | "Aggressive" {
+export function affordabilityLevel(ratio: number): RiskLevel {
   if (!Number.isFinite(ratio) || ratio < 0) throw new Error("Invalid EMI ratio");
-  return ratio < 0.2 ? "Comfortable" : ratio <= 0.4 ? "Manageable" : "Aggressive";
+  return ratio <= 0.2 ? "Low" : ratio <= 0.4 ? "Moderate" : "High";
 }
 export function financialInsights(annualIncome: number, principal: number, months: number, quotedEmi?: number) {
   if (!Number.isFinite(annualIncome) || annualIncome <= 0) return null;
