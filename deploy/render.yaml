@@ -1,18 +1,13 @@
 services:
   - type: web
     name: creditiq-api
-    runtime: docker
-    dockerfilePath: ./deploy/api.Dockerfile
-    dockerContext: .
+    runtime: python
+    region: singapore
+    rootDir: .
+    buildCommand: pip install -r services/api/requirements-lock.txt && python deploy/prepare_render_assets.py
+    startCommand: cd services/api && python -m scripts.start_server
     healthCheckPath: /health/ready
     envVars:
       - fromGroup: creditiq-api-secrets
-  - type: web
-    name: creditiq-web
-    runtime: docker
-    dockerfilePath: ./deploy/web.Dockerfile
-    dockerContext: .
-    healthCheckPath: /login
-    envVars:
-      - key: API_ORIGIN
-        sync: false
+      - key: PORT
+        value: "10000"

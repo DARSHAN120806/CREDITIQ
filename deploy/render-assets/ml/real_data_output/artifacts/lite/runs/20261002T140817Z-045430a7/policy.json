@@ -1,0 +1,7 @@
+{
+  "approve_below": 0.05,
+  "mode": "SANDBOX",
+  "production_thresholds": null,
+  "reject_at": 0.15,
+  "version": "sandbox-v1"
+}

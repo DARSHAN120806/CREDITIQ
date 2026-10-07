@@ -114,3 +114,38 @@ The code-level startup and packaging controls are implemented and validated. Rem
 gates require actual infrastructure, provider settings, credentials/domains, restore and
 alert evidence. No production environment, backup proof or deployment success is fabricated.
 For real lending use, the unchanged research-only model restrictions are an additional block.
+
+## Render native Git deployment update (2026-10-08)
+
+The earlier Render image-backed setup has been replaced at the user's direction with a
+GitHub-backed native Python service. `deploy/render.yaml` now sets `runtime: python`,
+repository root, locked dependency install plus artifact materialization, the shared API
+entrypoint, port 10000, and `/health/ready`. `.python-version` pins the supported Python
+minor line to 3.12. `deploy/render-assets/` contains the existing 30-file private runtime
+bundle; `deploy/prepare_render_assets.py` validates its manifest and copies unchanged
+files to paths already consumed by the backend. The Render repo must remain private.
+
+Verification on 2026-10-08: asset materialization/checksums passed for 30 files; Blueprint
+fields parsed and validated; a non-default `PORT=12345` entrypoint check bound to
+`0.0.0.0`; FastAPI startup loaded Lite, `/health/live` and `/health/ready` returned 200
+against Supabase as `creditiq_runtime`. This was not a hosted Render deploy. Docker is
+not needed for this Git-backed setup.
+
+Deployment is still blocked on actual Render provider setup/secrets and final HTTPS
+origins, confirmation that the GitHub repository is private, and a verified Render ingress
+peer CIDR for the required `CREDITIQ_TRUSTED_PROXY_IPS`. The current developer `.env`
+remains `development` with `COOKIE_SECURE=false` and must not be uploaded. No hosted
+login/registration/CRUD validation was performed. The final verdict remains
+**PRODUCTION_READY = false**.
+
+## Render managed HTTPS update (2026-10-08)
+
+On a Render web service, startup now uses Render's documented runtime markers to rely on
+its public HTTP-to-HTTPS redirect and TLS termination. It rejects a configured
+`CREDITIQ_TRUSTED_PROXY_IPS`, disables Uvicorn proxy-header parsing, keeps HSTS and
+Secure cookies, and logs `https_enforcement=render_edge`. Other deployments retain
+their explicit trusted-proxy allowlist and application scheme check. This replaces the
+historical Render proxy CIDR blocker above. Render's private network can still reach
+web services over HTTP; the application cannot attest that those requests crossed the
+public TLS edge. Hosted Render verification and the remaining manual deployment gates
+are still pending; **PRODUCTION_READY = false**.

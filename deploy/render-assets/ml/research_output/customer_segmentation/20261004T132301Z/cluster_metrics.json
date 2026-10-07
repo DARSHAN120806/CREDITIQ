@@ -1,0 +1,281 @@
+{
+  "source_contract": "FULL_RESEARCH_V1_NO_EXT",
+  "source_run_id": "20261004T075100Z",
+  "source_dataset": "ml/research_output/full_research_v1_no_ext/20261004T075100Z/full_research_v1_no_ext_train.parquet",
+  "source_sha256": "31b6e5f08704568a2923e23b3254f03aba5bc1a8177342d6d27191ca4466711f",
+  "source_rows": 278220,
+  "feature_count": 22,
+  "features": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "credit_bureau_inquiries_1m",
+    "credit_bureau_inquiries_3m",
+    "credit_bureau_inquiries_12m",
+    "credit_bureau_inquiry_history_missing",
+    "loan_to_goods_price_ratio"
+  ],
+  "excluded_fields": [
+    "SK_ID_CURR (identifier only)",
+    "TARGET (excluded to prevent outcome leakage)"
+  ],
+  "categorical_features": [
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status"
+  ],
+  "numeric_features": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "credit_bureau_inquiries_1m",
+    "credit_bureau_inquiries_3m",
+    "credit_bureau_inquiries_12m",
+    "credit_bureau_inquiry_history_missing",
+    "loan_to_goods_price_ratio"
+  ],
+  "preprocessing": "numeric median imputation; categorical most-frequent imputation and dense one-hot encoding; StandardScaler",
+  "selection": [
+    {
+      "k": 2,
+      "silhouette_score": 0.04727989948181315,
+      "davies_bouldin_index": 2.0997342437138142,
+      "inertia": 971236.3625934611,
+      "minimum_cluster_share": 0.18,
+      "eligible_by_minimum_share": true
+    },
+    {
+      "k": 3,
+      "silhouette_score": 0.06814036784973775,
+      "davies_bouldin_index": 3.265570554233641,
+      "inertia": 933328.6884241092,
+      "minimum_cluster_share": 0.18,
+      "eligible_by_minimum_share": true
+    },
+    {
+      "k": 4,
+      "silhouette_score": 0.082839377095425,
+      "davies_bouldin_index": 3.078651104997606,
+      "inertia": 903255.8188440492,
+      "minimum_cluster_share": 0.0964,
+      "eligible_by_minimum_share": true
+    },
+    {
+      "k": 5,
+      "silhouette_score": 0.07798311198155229,
+      "davies_bouldin_index": 2.1810716452609684,
+      "inertia": 884367.4073376718,
+      "minimum_cluster_share": 0.0028,
+      "eligible_by_minimum_share": false
+    },
+    {
+      "k": 6,
+      "silhouette_score": 0.0903127580068813,
+      "davies_bouldin_index": 2.7850178537063055,
+      "inertia": 869144.6746487822,
+      "minimum_cluster_share": 0.0046,
+      "eligible_by_minimum_share": false
+    },
+    {
+      "k": 7,
+      "silhouette_score": 0.09730536175008805,
+      "davies_bouldin_index": 2.4413567747695253,
+      "inertia": 846103.5369075218,
+      "minimum_cluster_share": 0.0028,
+      "eligible_by_minimum_share": false
+    },
+    {
+      "k": 8,
+      "silhouette_score": 0.11362747700672653,
+      "davies_bouldin_index": 2.456629141246186,
+      "inertia": 826978.3717295306,
+      "minimum_cluster_share": 0.0046,
+      "eligible_by_minimum_share": false
+    },
+    {
+      "k": 9,
+      "silhouette_score": 0.11392631141725383,
+      "davies_bouldin_index": 2.295085790519855,
+      "inertia": 807064.8129556882,
+      "minimum_cluster_share": 0.0028,
+      "eligible_by_minimum_share": false
+    },
+    {
+      "k": 10,
+      "silhouette_score": 0.13080152738098444,
+      "davies_bouldin_index": 2.302734589956512,
+      "inertia": 790665.5470862621,
+      "minimum_cluster_share": 0.0046,
+      "eligible_by_minimum_share": false
+    }
+  ],
+  "selected_k": 4,
+  "selection_criteria": {
+    "k_evaluated": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "minimum_cluster_share": 0.01,
+    "silhouette_tolerance": 0.01,
+    "rule": "Filter by minimum cluster share; shortlist within 0.01 of maximum silhouette; minimize Davies-Bouldin Index; tie-break on lower K. Inertia is diagnostic only.",
+    "fit_sample_size": 20000,
+    "metric_sample_size": 5000,
+    "inertia_basis": "candidate K-Means fit sample"
+  },
+  "final_model": {
+    "algorithm": "KMeans",
+    "n_clusters": 4,
+    "n_init": 10,
+    "max_iter": 300,
+    "random_state": 42
+  },
+  "pca": {
+    "method": "PCA",
+    "components": 2,
+    "visualization_rows": 8000,
+    "explained_variance_ratio": [
+      0.08018641495916969,
+      0.058387299577793
+    ],
+    "random_state": 42
+  },
+  "profiles": [
+    {
+      "cluster_id": 1,
+      "cluster_size": 58616,
+      "cluster_percentage": 21.0682193947236,
+      "mean_income_annual": 214645.4442413334,
+      "mean_debt_requested_amount": 736151.0023884263,
+      "mean_inquiries_1m": 0.3415401135143427,
+      "mean_inquiries_3m": 0.2676215677251112,
+      "mean_inquiries_12m": 1.7327044025157232,
+      "mean_payment_income_ratio": 2.0889468573807215,
+      "mean_principal_income_ratio": 3.8817358837965985,
+      "mean_payment_principal_ratio": 0.05350249634592533,
+      "mean_loan_to_goods_price_ratio": 1.1198861876544193,
+      "mean_age_years": 39.33402648376463,
+      "mean_employment_years": 6.505668697957985,
+      "mean_credit_utilization": null,
+      "description": "This segment has higher-than-cohort-average income, higher-than-cohort-average requested loan amount, lower average age.",
+      "debt_definition": "requested_amount (application principal), not total existing liabilities"
+    },
+    {
+      "cluster_id": 2,
+      "cluster_size": 28166,
+      "cluster_percentage": 10.123643160089138,
+      "mean_income_annual": 170082.54728218418,
+      "mean_debt_requested_amount": 588742.091102748,
+      "mean_inquiries_1m": 0.2878839014512319,
+      "mean_inquiries_3m": 0.2547671279109011,
+      "mean_inquiries_12m": 1.8749156260546742,
+      "mean_payment_income_ratio": 2.1968373683817375,
+      "mean_principal_income_ratio": 3.823946382043752,
+      "mean_payment_principal_ratio": 0.05715215894801627,
+      "mean_loan_to_goods_price_ratio": 1.1455535121736267,
+      "mean_age_years": 36.241660094454204,
+      "mean_employment_years": 5.422961028425028,
+      "mean_credit_utilization": null,
+      "description": "This segment has lower average age.",
+      "debt_definition": "requested_amount (application principal), not total existing liabilities"
+    },
+    {
+      "cluster_id": 3,
+      "cluster_size": 51884,
+      "cluster_percentage": 18.648551506002445,
+      "mean_income_annual": 135647.2229459949,
+      "mean_debt_requested_amount": 555490.5479049418,
+      "mean_inquiries_1m": 0.20177616714761873,
+      "mean_inquiries_3m": 0.2934702368968526,
+      "mean_inquiries_12m": 2.095027179383934,
+      "mean_payment_income_ratio": 2.426825107096575,
+      "mean_principal_income_ratio": 4.533438329354414,
+      "mean_payment_principal_ratio": 0.05297468741843773,
+      "mean_loan_to_goods_price_ratio": 1.128400321446341,
+      "mean_age_years": 59.854560726764184,
+      "mean_employment_years": 4.5859000684462705,
+      "mean_credit_utilization": null,
+      "description": "This segment has lower-than-cohort-average income, higher average age, lower average employment tenure.",
+      "debt_definition": "requested_amount (application principal), not total existing liabilities"
+    },
+    {
+      "cluster_id": 4,
+      "cluster_size": 139554,
+      "cluster_percentage": 50.159585939184815,
+      "mean_income_annual": 162146.47734393136,
+      "mean_debt_requested_amount": 617392.2832451954,
+      "mean_inquiries_1m": 0.2640691562243093,
+      "mean_inquiries_3m": 0.2674987336306187,
+      "mean_inquiries_12m": 1.9680791875306212,
+      "mean_payment_income_ratio": 2.2898416072157275,
+      "mean_principal_income_ratio": 4.181650730870536,
+      "mean_payment_principal_ratio": 0.054106439573553836,
+      "mean_loan_to_goods_price_ratio": 1.1434763579699518,
+      "mean_age_years": 42.113308970396815,
+      "mean_employment_years": 6.886573713305085,
+      "mean_credit_utilization": null,
+      "description": "This segment is near cohort averages across the profiled measures.",
+      "debt_definition": "requested_amount (application principal), not total existing liabilities"
+    }
+  ],
+  "cluster_descriptions": [
+    {
+      "cluster_id": 1,
+      "description": "This segment has higher-than-cohort-average income, higher-than-cohort-average requested loan amount, lower average age."
+    },
+    {
+      "cluster_id": 2,
+      "description": "This segment has lower average age."
+    },
+    {
+      "cluster_id": 3,
+      "description": "This segment has lower-than-cohort-average income, higher average age, lower average employment tenure."
+    },
+    {
+      "cluster_id": 4,
+      "description": "This segment is near cohort averages across the profiled measures."
+    }
+  ],
+  "utilization_available": false,
+  "debt_proxy": "requested_amount is loan principal on the current application, not total debt",
+  "mode": "RESEARCH_ONLY",
+  "release_ready": false,
+  "created_at": "2026-10-04T13:23:01.951334+00:00",
+  "software": {
+    "python": "3.12.14",
+    "pandas": "3.0.1",
+    "scikit_learn": "1.9.1"
+  },
+  "model_sha256": "bd779c781d2f82081e6117ee3a0af5f9a2890d84a6f59201d01e5e851f1726f5"
+}

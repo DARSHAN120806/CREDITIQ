@@ -1,0 +1,108 @@
+{
+  "cohort": "Same pinned final-test applicants as the existing LightGBM experiment. This cohort was previously inspected; results are a reused-holdout research benchmark, not new independent confirmation. No selection uses these test results.",
+  "selection_basis": "Development nested CV: lowest mean Brier, then highest ROC-AUC",
+  "development_selection": [
+    {
+      "Model": "xgboost",
+      "Calibration": "sigmoid",
+      "Brier": 0.073388397693634,
+      "ROC_AUC": 0.6897228862054932,
+      "AveragePrecision": 0.1729843211346542,
+      "Inner_CV_AUC": 0.6229818261904331
+    },
+    {
+      "Model": "xgboost",
+      "Calibration": "isotonic",
+      "Brier": 0.0734682803352673,
+      "ROC_AUC": 0.6883380409522792,
+      "AveragePrecision": 0.1658436520490507,
+      "Inner_CV_AUC": 0.6229818261904331
+    }
+  ],
+  "selected_method": "sigmoid",
+  "baseline_method": "sigmoid",
+  "LightGBM": [
+    {
+      "mean_predicted_probability": 0.019007228373319748,
+      "observed_default_rate": 0.02275994250119789
+    },
+    {
+      "mean_predicted_probability": 0.03141789262425916,
+      "observed_default_rate": 0.03235082674335011
+    },
+    {
+      "mean_predicted_probability": 0.04124284157940422,
+      "observed_default_rate": 0.03450754852624011
+    },
+    {
+      "mean_predicted_probability": 0.0506689464626777,
+      "observed_default_rate": 0.04696860771627127
+    },
+    {
+      "mean_predicted_probability": 0.060893313668998875,
+      "observed_default_rate": 0.05534259702922856
+    },
+    {
+      "mean_predicted_probability": 0.07287295631638313,
+      "observed_default_rate": 0.07021327582075246
+    },
+    {
+      "mean_predicted_probability": 0.08798267007819814,
+      "observed_default_rate": 0.09465612269350587
+    },
+    {
+      "mean_predicted_probability": 0.10902452389274808,
+      "observed_default_rate": 0.11694224778336929
+    },
+    {
+      "mean_predicted_probability": 0.14211224147558535,
+      "observed_default_rate": 0.14593817397555714
+    },
+    {
+      "mean_predicted_probability": 0.21918670444098137,
+      "observed_default_rate": 0.21490177287973167
+    }
+  ],
+  "XGBoost": [
+    {
+      "mean_predicted_probability": 0.019556228878074934,
+      "observed_default_rate": 0.02156205079060853
+    },
+    {
+      "mean_predicted_probability": 0.03304812124701118,
+      "observed_default_rate": 0.02923556194584232
+    },
+    {
+      "mean_predicted_probability": 0.04251142841911761,
+      "observed_default_rate": 0.040258806613946804
+    },
+    {
+      "mean_predicted_probability": 0.05122176264076818,
+      "observed_default_rate": 0.047927150730889045
+    },
+    {
+      "mean_predicted_probability": 0.06092384012231258,
+      "observed_default_rate": 0.05869669381887877
+    },
+    {
+      "mean_predicted_probability": 0.07236881764985491,
+      "observed_default_rate": 0.06709801102324467
+    },
+    {
+      "mean_predicted_probability": 0.0869561375997891,
+      "observed_default_rate": 0.0932183081715792
+    },
+    {
+      "mean_predicted_probability": 0.1078914792406139,
+      "observed_default_rate": 0.1186196980589504
+    },
+    {
+      "mean_predicted_probability": 0.1405528989479235,
+      "observed_default_rate": 0.14378145219266714
+    },
+    {
+      "mean_predicted_probability": 0.2174920801681997,
+      "observed_default_rate": 0.21418303785337806
+    }
+  ]
+}

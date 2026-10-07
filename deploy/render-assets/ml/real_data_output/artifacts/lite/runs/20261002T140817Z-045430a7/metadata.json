@@ -1,0 +1,405 @@
+{
+  "adapter_evidence": {
+    "annuity_monthly_verified": false,
+    "availability_verified": false,
+    "cash_product_verified": true,
+    "category_mapping_verified": true,
+    "currency": "XXX",
+    "evidence": "User-authorized research assumptions on 2026-10-02; observed schemas/categories and cash-product dictionary checked in DATA_VALIDATION_REPORT.md. Monetary units are assumptions, not independently verified facts.",
+    "mode": "RESEARCH",
+    "payment_identity_verified": false,
+    "release_ready": false,
+    "research_assumptions": {
+      "annuity_field": "AMT_ANNUITY",
+      "annuity_period": "monthly",
+      "authorized_by": "User instruction in this project conversation, 2026-10-02",
+      "currency": "unspecified_research_currency",
+      "dataset_source": "Standard Kaggle Home Credit Default Risk dataset, as asserted by the user",
+      "income_field": "AMT_INCOME_TOTAL",
+      "income_period": "annual",
+      "production_readiness": "Not assessed or claimed; release_ready must remain false",
+      "target_interpretation": "Dataset TARGET=1 payment difficulties; no fixed default-probability horizon claimed"
+    },
+    "schedule_complete": false,
+    "schedule_versions_resolved": false,
+    "sources": {},
+    "synthetic": false
+  },
+  "artifact_sha256": {
+    "best_model.joblib": "bc5e6cbbfe6f7d0f4418bd004ec3c471d79842387373a8b86f17266a71fcb3a2",
+    "development.parquet": "d1551e66f774fd05ac8bb3bea8398a0e8e16f5829e9f38a077a5ce5fbe121f98",
+    "development_folds.json": "ec433cc8b3cb671419276a307b9996a1f69be8240ec46153e069870489c28c43",
+    "explanation_background.parquet": "53eeb6b081b2eea6f1a3fb8b06d2305666a1ef964a2c1f89b25cdeef5eaaea79",
+    "explanation_sample.parquet": "beeb78ddcbe7bb3a48503215044f2e4b8f186e378ed74c0c94e725e6229f6640",
+    "policy.json": "9bf07f7c6ad847b8ba9df21c58b46ebb08d4065c57d398ecdeb0af8942cd7e8b",
+    "policy_validation.parquet": "c8ccf3c1009adc3a983666eca9cdd9e3f53f8f6a77a77ac31026048938eae8a4",
+    "splits.json": "6cdd57d04b10ed667dc62a484daf19e44db5c5b6952b921fe088296003cb80e3",
+    "test_predictions.parquet": "e1d699d6dabe5f0c49bb12fad09e595a95a95395e9e8a1333a58e3df6caf294e"
+  },
+  "best_model": "lightgbm",
+  "calibration_method": "sigmoid",
+  "categorical_columns": [
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status"
+  ],
+  "currency": "XXX",
+  "development_cv_auc": 0.6492836851719547,
+  "feature_columns": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio"
+  ],
+  "feature_quality": {
+    "eligible_rows": 326501,
+    "excluded_rows": 29754,
+    "exclusion_reasons": {
+      "Non-finite or missing: quoted_monthly_payment": 36,
+      "unsupported_product": 29718
+    },
+    "missing_counts": {
+      "age_years": 0,
+      "annual_income": 0,
+      "dependent_children": 0,
+      "education_level": 0,
+      "employed_age_ratio": 61190,
+      "employment_tenure_missing": 0,
+      "employment_type": 0,
+      "household_size": 0,
+      "housing_status": 0,
+      "income_per_household_member": 0,
+      "occupation": 0,
+      "payment_principal_ratio": 0,
+      "principal_income_ratio": 0,
+      "proposed_payment_income_ratio": 0,
+      "quoted_monthly_payment": 0,
+      "requested_amount": 0,
+      "years_employed": 61190
+    }
+  },
+  "feature_set": "lite",
+  "input_manifest": {
+    "code": {
+      "__init__.py": "ac9510bebfd5c969e4961a4867d63aa2afd6773fb10ef284cffce81a959b15cb",
+      "cli.py": "ee20d60a0acd1ff15257967b82911b905e6fec961a269487ed1a3179387357fa",
+      "config.py": "6ff6e6e5f3d3e8423d09348532db3b1a9b22df0a18649af11f8e3ea4594ccf07",
+      "contracts.py": "3494cc01c298119d6969ddf1c4359fe7c8cdd701d62c64b99531f77317ecc2a9",
+      "eda.py": "45eccc58d01ab0e0a71483109c558c6d28e75e155add2f72454a5aba093a0ac2",
+      "explain.py": "b0027df68e9bbcf1fe8772e356369fad7ccf6a4a7a825460c77ca82598226289",
+      "features.py": "633c11720e61f039c5a1ae86df420e3b1ee9b50279627fb31fb60569caf2d88d",
+      "io.py": "e92d66d0b63c09cf4fddd824327ee98d0f0d990354c0f31f95f3de0da6af437f",
+      "model_wrapper.py": "1908c7f7a416fb462fcdb1ff6201d972d3e2baf84e5f7779c374c9bc909c87a9",
+      "preprocessing.py": "a3f13cd5c01afad54e57e1ea8bcb6ef99331e404de451e8dbf5ccf8907eb5fc3",
+      "provenance.py": "f05d52a99b98c68de4fdf8f44c243b81e0fb3cd9e7294d22e2d71fcae53f0396",
+      "risk.py": "ce503dcd3e355406c3dee4da0649d3ce61334d11271c1e46f623723acdcc5ac8",
+      "segmentation.py": "47fd47735d25d571d250e25658c9c058f3a425c38a6d8b861e9f0b6c7f17c385",
+      "train.py": "d12f83b3379323286d57aeef1efcd269677dd1087fa0484900f17de3866f47e2"
+    },
+    "schema": "lite-v1",
+    "sources": {
+      "adapter_manifest.json": "e4148f034deff9d53e8ea86eb14010a85ffe14bb3088fdef228d3fffa4d41b74",
+      "application_test": "a36161331d839150a67b6216d4de066f543a3b01a34061507d40e76612e0dec8",
+      "application_train": "52e96b895b1112e1c853f670e58372719c8441c5ed1c57ac2f7fad559d784f5f"
+    },
+    "variant": "lite"
+  },
+  "mode": "RESEARCH",
+  "n_features_in": 17,
+  "numeric_columns": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio"
+  ],
+  "numeric_support": {
+    "age_years": [
+      20.503764544832308,
+      68.99657768651609
+    ],
+    "annual_income": [
+      26100.0,
+      117000000.0
+    ],
+    "dependent_children": [
+      0.0,
+      19.0
+    ],
+    "employed_age_ratio": [
+      -0.0,
+      0.7228086088892554
+    ],
+    "employment_tenure_missing": [
+      0.0,
+      1.0
+    ],
+    "household_size": [
+      1.0,
+      20.0
+    ],
+    "income_per_household_member": [
+      5142.857142857143,
+      39000000.0
+    ],
+    "payment_principal_ratio": [
+      0.02207258064516129,
+      0.12442957597804374
+    ],
+    "principal_income_ratio": [
+      0.004807615384615385,
+      49.2272
+    ],
+    "proposed_payment_income_ratio": [
+      0.0026866153846153845,
+      16.7196
+    ],
+    "quoted_monthly_payment": [
+      1615.5,
+      230161.5
+    ],
+    "requested_amount": [
+      45000.0,
+      4050000.0
+    ],
+    "years_employed": [
+      -0.0,
+      47.997262149212865
+    ]
+  },
+  "observed_categories": {
+    "education_level": [
+      "ACADEMIC_DEGREE",
+      "HIGHER",
+      "INCOMPLETE_HIGHER",
+      "LOWER_SECONDARY",
+      "SECONDARY"
+    ],
+    "employment_type": [
+      "COMMERCIAL_ASSOCIATE",
+      "MATERNITY_LEAVE",
+      "PENSIONER",
+      "STATE_SERVANT",
+      "STUDENT",
+      "UNEMPLOYED",
+      "WORKING"
+    ],
+    "housing_status": [
+      "COOPERATIVE",
+      "MUNICIPAL",
+      "OFFICE",
+      "OWN_OR_APARTMENT",
+      "RENTED",
+      "WITH_PARENTS"
+    ],
+    "occupation": [
+      "ACCOUNTANT",
+      "CLEANING",
+      "COOKING",
+      "CORE_STAFF",
+      "DRIVER",
+      "HIGH_TECH",
+      "HR",
+      "IT",
+      "LABORER",
+      "LOW_SKILL_LABOR",
+      "MANAGER",
+      "MEDICAL",
+      "MISSING",
+      "PRIVATE_SERVICE",
+      "REALTY_AGENT",
+      "SALES",
+      "SECRETARY",
+      "SECURITY",
+      "WAITING_BAR"
+    ]
+  },
+  "params": {
+    "colsample_bytree": 0.42063311266913106,
+    "learning_rate": 0.02435000636897718,
+    "max_depth": 7,
+    "min_child_samples": 42,
+    "n_estimators": 352,
+    "num_leaves": 92,
+    "reg_alpha": 0.010842262717330166,
+    "reg_lambda": 23.09664459647274,
+    "subsample": 0.798070764044508
+  },
+  "policy": "sandbox-v1",
+  "positive_class": 1,
+  "reference_cohort": "calibration",
+  "release_ready": false,
+  "release_status": "RESEARCH_ONLY",
+  "research_assumptions": {
+    "annuity_field": "AMT_ANNUITY",
+    "annuity_period": "monthly",
+    "authorized_by": "User instruction in this project conversation, 2026-10-02",
+    "currency": "unspecified_research_currency",
+    "dataset_source": "Standard Kaggle Home Credit Default Risk dataset, as asserted by the user",
+    "income_field": "AMT_INCOME_TOTAL",
+    "income_period": "annual",
+    "production_readiness": "Not assessed or claimed; release_ready must remain false",
+    "target_interpretation": "Dataset TARGET=1 payment difficulties; no fixed default-probability horizon claimed"
+  },
+  "run_id": "20261002T140817Z-045430a7",
+  "runtime": {
+    "packages": {
+      "joblib": "1.6.0",
+      "lightgbm": "4.7.0",
+      "matplotlib": "3.11.2",
+      "numpy": "2.3.5",
+      "optuna": "5.0.0",
+      "pandas": "3.0.1",
+      "pyarrow": "25.0.1",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "shap": "0.52.0",
+      "xgboost": "3.4.1"
+    },
+    "python": "3.12.14"
+  },
+  "schema_version": "lite-v1",
+  "search_budget": {
+    "max_rows": null,
+    "models": [
+      "logistic_regression",
+      "decision_tree",
+      "random_forest",
+      "xgboost",
+      "lightgbm"
+    ],
+    "optuna_trials": 5,
+    "tune_rows": 10000
+  },
+  "selection": "nested development Brier then ROC_AUC",
+  "split_sizes": {
+    "calibration": 41733,
+    "development": 166932,
+    "policy": 27822,
+    "test": 41733
+  },
+  "synthetic": false,
+  "target_definition_version": "home-credit-target-unverified-horizon-v1",
+  "tenure_missing_observed": true,
+  "test_metrics": {
+    "baseline": {
+      "Accuracy_always_zero": 0.9165408669398318,
+      "AveragePrecision": 0.08345913306016821,
+      "Brier": 0.07649370620489901
+    },
+    "bootstrap_95pct": {
+      "AveragePrecision": [
+        0.1675457177338197,
+        0.1856176596005386
+      ],
+      "Brier": [
+        0.07126499672889568,
+        0.0752007399515857
+      ],
+      "ROC_AUC": [
+        0.690482839601437,
+        0.7083832895271108
+      ]
+    },
+    "metrics": {
+      "Accuracy": 0.8406776411952173,
+      "AveragePrecision": 0.17577550841947107,
+      "Brier": 0.07312897694328392,
+      "F1": 0.24793575387399616,
+      "Gini": 0.40155970268287255,
+      "KS": 0.2999066389691105,
+      "LogLoss": 0.2674222774968418,
+      "Precision": 0.2045539380365808,
+      "ROC_AUC": 0.7007798513414363,
+      "Recall": 0.3146712604076945,
+      "Threshold": 0.15
+    },
+    "threshold_purpose": "sandbox diagnostic only, not approved lending policy"
+  },
+  "trained_at": "2026-10-02T14:23:19.954512+00:00",
+  "transformed_features": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "employment_type_BUSINESSMAN",
+    "employment_type_COMMERCIAL_ASSOCIATE",
+    "employment_type_MATERNITY_LEAVE",
+    "employment_type_OTHER",
+    "employment_type_PENSIONER",
+    "employment_type_STATE_SERVANT",
+    "employment_type_STUDENT",
+    "employment_type_UNEMPLOYED",
+    "employment_type_WORKING",
+    "education_level_ACADEMIC_DEGREE",
+    "education_level_HIGHER",
+    "education_level_INCOMPLETE_HIGHER",
+    "education_level_LOWER_SECONDARY",
+    "education_level_OTHER",
+    "education_level_SECONDARY",
+    "occupation_ACCOUNTANT",
+    "occupation_CLEANING",
+    "occupation_COOKING",
+    "occupation_CORE_STAFF",
+    "occupation_DRIVER",
+    "occupation_HIGH_TECH",
+    "occupation_HR",
+    "occupation_IT",
+    "occupation_LABORER",
+    "occupation_LOW_SKILL_LABOR",
+    "occupation_MANAGER",
+    "occupation_MEDICAL",
+    "occupation_MISSING",
+    "occupation_OTHER",
+    "occupation_PRIVATE_SERVICE",
+    "occupation_REALTY_AGENT",
+    "occupation_SALES",
+    "occupation_SECRETARY",
+    "occupation_SECURITY",
+    "occupation_WAITING_BAR",
+    "housing_status_COOPERATIVE",
+    "housing_status_MISSING",
+    "housing_status_MUNICIPAL",
+    "housing_status_OFFICE",
+    "housing_status_OTHER",
+    "housing_status_OWN_OR_APARTMENT",
+    "housing_status_RENTED",
+    "housing_status_WITH_PARENTS"
+  ],
+  "unresolved_release_gates": [
+    "target/horizon and population validation",
+    "independent policy approval",
+    "real-data cohort acceptance"
+  ]
+}

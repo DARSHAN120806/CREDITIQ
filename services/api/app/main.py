@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 
 from app.core.config import Settings
-from app.core.startup_environment_validator import validate_startup_environment
+from app.core.startup_environment_validator import render_managed_https, validate_startup_environment
 import json
 from app.db.session import build_engine, build_session_factory
 from app.auth.middleware import AuthSafetyMiddleware, TransportSafetyMiddleware
@@ -68,7 +68,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                                allow_credentials=True, allow_methods=['GET', 'POST', 'DELETE'],
                                allow_headers=['Content-Type', 'X-CSRF-Token', 'Idempotency-Key'])
     application.add_middleware(TransportSafetyMiddleware,
-                              https_only=settings.app_env in ('staging', 'production'))
+                              https_only=settings.app_env in ('staging', 'production'),
+                              managed_https=render_managed_https(settings))
 
     @application.exception_handler(AuthenticationError)
     async def authentication_failed(request: Request, exc: AuthenticationError):

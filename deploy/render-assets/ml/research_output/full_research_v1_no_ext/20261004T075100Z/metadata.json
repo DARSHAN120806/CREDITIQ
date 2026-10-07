@@ -1,0 +1,190 @@
+{
+  "run_id": "20261004T075100Z",
+  "contract": "FULL_RESEARCH_V1_NO_EXT",
+  "feature_count": 22,
+  "feature_columns": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "credit_bureau_inquiries_1m",
+    "credit_bureau_inquiries_3m",
+    "credit_bureau_inquiries_12m",
+    "credit_bureau_inquiry_history_missing",
+    "loan_to_goods_price_ratio"
+  ],
+  "removed_features": [
+    "EXT_SOURCE_1",
+    "EXT_SOURCE_2",
+    "EXT_SOURCE_3",
+    "ext_source_1_missing",
+    "ext_source_2_missing",
+    "ext_source_3_missing"
+  ],
+  "best_model": "lightgbm",
+  "params": {
+    "n_estimators": 352,
+    "learning_rate": 0.02435000636897718,
+    "num_leaves": 92,
+    "max_depth": 7,
+    "min_child_samples": 42,
+    "subsample": 0.798070764044508,
+    "colsample_bytree": 0.42063311266913106,
+    "reg_lambda": 23.09664459647274,
+    "reg_alpha": 0.010842262717330166
+  },
+  "development_cv_auc": 0.6936458096175139,
+  "selection": [
+    {
+      "Model": "lightgbm",
+      "Calibration": "sigmoid",
+      "Brier": 0.07339866680467166,
+      "ROC_AUC": 0.68949918471459,
+      "AveragePrecision": 0.17224923293165043,
+      "Inner_CV_AUC": 0.6315532595247327
+    },
+    {
+      "Model": "lightgbm",
+      "Calibration": "isotonic",
+      "Brier": 0.07348723456804114,
+      "ROC_AUC": 0.6885664952816032,
+      "AveragePrecision": 0.16523429135867532,
+      "Inner_CV_AUC": 0.6315532595247327
+    }
+  ],
+  "calibration_method": "sigmoid",
+  "split_sizes": {
+    "calibration": 41733,
+    "development": 166932,
+    "policy": 27822,
+    "test": 41733
+  },
+  "split_source": "pinned Lite run 20261002T140817Z-045430a7",
+  "test_metrics": {
+    "evaluation": "same pinned, untouched Lite final-test cohort; paired applicant-level comparison",
+    "test_rows": 41733,
+    "test_default_rate": 0.08345913306016821,
+    "Lite": {
+      "roc_auc": 0.7007798513414363,
+      "average_precision": 0.17577550841947107,
+      "brier_score": 0.07312897694328392,
+      "log_loss": 0.2674222774968418,
+      "calibration_bins": [
+        {
+          "mean_predicted_probability": 0.01895463344966205,
+          "observed_default_rate": 0.02467656923814087
+        },
+        {
+          "mean_predicted_probability": 0.032315963678734745,
+          "observed_default_rate": 0.03115264797507788
+        },
+        {
+          "mean_predicted_probability": 0.042872048375197744,
+          "observed_default_rate": 0.033549005511622335
+        },
+        {
+          "mean_predicted_probability": 0.052703668994914535,
+          "observed_default_rate": 0.05128205128205128
+        },
+        {
+          "mean_predicted_probability": 0.06222570533520515,
+          "observed_default_rate": 0.05917585050311452
+        },
+        {
+          "mean_predicted_probability": 0.07328537094061559,
+          "observed_default_rate": 0.0730889048646058
+        },
+        {
+          "mean_predicted_probability": 0.08801818298339065,
+          "observed_default_rate": 0.08938413611310808
+        },
+        {
+          "mean_predicted_probability": 0.10875737946532645,
+          "observed_default_rate": 0.11310807572489816
+        },
+        {
+          "mean_predicted_probability": 0.14121788008512978,
+          "observed_default_rate": 0.14210400191708603
+        },
+        {
+          "mean_predicted_probability": 0.21468209029127944,
+          "observed_default_rate": 0.21705797795879253
+        }
+      ]
+    },
+    "FULL_RESEARCH_V1_NO_EXT": {
+      "roc_auc": 0.7047402078067326,
+      "average_precision": 0.17640892489750676,
+      "brier_score": 0.07304858306273268,
+      "log_loss": 0.26674857490989123,
+      "calibration_bins": [
+        {
+          "mean_predicted_probability": 0.019007228373319748,
+          "observed_default_rate": 0.02275994250119789
+        },
+        {
+          "mean_predicted_probability": 0.03141789262425916,
+          "observed_default_rate": 0.03235082674335011
+        },
+        {
+          "mean_predicted_probability": 0.04124284157940422,
+          "observed_default_rate": 0.03450754852624011
+        },
+        {
+          "mean_predicted_probability": 0.0506689464626777,
+          "observed_default_rate": 0.04696860771627127
+        },
+        {
+          "mean_predicted_probability": 0.060893313668998875,
+          "observed_default_rate": 0.05534259702922856
+        },
+        {
+          "mean_predicted_probability": 0.07287295631638313,
+          "observed_default_rate": 0.07021327582075246
+        },
+        {
+          "mean_predicted_probability": 0.08798267007819814,
+          "observed_default_rate": 0.09465612269350587
+        },
+        {
+          "mean_predicted_probability": 0.10902452389274808,
+          "observed_default_rate": 0.11694224778336929
+        },
+        {
+          "mean_predicted_probability": 0.14211224147558535,
+          "observed_default_rate": 0.14593817397555714
+        },
+        {
+          "mean_predicted_probability": 0.21918670444098137,
+          "observed_default_rate": 0.21490177287973167
+        }
+      ]
+    },
+    "calibration_method_no_ext": "sigmoid",
+    "differences_no_ext_minus_lite": {
+      "roc_auc": 0.003960356465296355,
+      "average_precision": 0.0006334164780356921,
+      "brier_score": -8.039388055124108e-05,
+      "log_loss": -0.000673702586950542
+    },
+    "interpretation": "Descriptive research comparison. AUC/AP higher is better; Brier/log-loss lower is better. The existing Lite artifact is unchanged."
+  },
+  "eligibility": "same 278,220 eligible application_train CASH rows as pinned Lite cohort; application_test excluded",
+  "mode": "RESEARCH_ONLY",
+  "release_ready": false,
+  "shap_interpretation": "Tree SHAP explains the LightGBM raw margin before probability calibration; it is not a causal explanation.",
+  "ablation_cohort": "policy partition, diagnostic only; final test remains reserved for the paired headline comparison"
+}

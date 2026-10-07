@@ -1,0 +1,109 @@
+{
+  "evaluation": "same pinned, untouched Lite final-test cohort; paired applicant-level comparison",
+  "test_rows": 41733,
+  "test_default_rate": 0.08345913306016821,
+  "Lite": {
+    "roc_auc": 0.7007798513414363,
+    "average_precision": 0.17577550841947107,
+    "brier_score": 0.07312897694328392,
+    "log_loss": 0.2674222774968418,
+    "calibration_bins": [
+      {
+        "mean_predicted_probability": 0.01895463344966205,
+        "observed_default_rate": 0.02467656923814087
+      },
+      {
+        "mean_predicted_probability": 0.032315963678734745,
+        "observed_default_rate": 0.03115264797507788
+      },
+      {
+        "mean_predicted_probability": 0.042872048375197744,
+        "observed_default_rate": 0.033549005511622335
+      },
+      {
+        "mean_predicted_probability": 0.052703668994914535,
+        "observed_default_rate": 0.05128205128205128
+      },
+      {
+        "mean_predicted_probability": 0.06222570533520515,
+        "observed_default_rate": 0.05917585050311452
+      },
+      {
+        "mean_predicted_probability": 0.07328537094061559,
+        "observed_default_rate": 0.0730889048646058
+      },
+      {
+        "mean_predicted_probability": 0.08801818298339065,
+        "observed_default_rate": 0.08938413611310808
+      },
+      {
+        "mean_predicted_probability": 0.10875737946532645,
+        "observed_default_rate": 0.11310807572489816
+      },
+      {
+        "mean_predicted_probability": 0.14121788008512978,
+        "observed_default_rate": 0.14210400191708603
+      },
+      {
+        "mean_predicted_probability": 0.21468209029127944,
+        "observed_default_rate": 0.21705797795879253
+      }
+    ]
+  },
+  "FULL_RESEARCH_V1_NO_EXT": {
+    "roc_auc": 0.7047402078067326,
+    "average_precision": 0.17640892489750676,
+    "brier_score": 0.07304858306273268,
+    "log_loss": 0.26674857490989123,
+    "calibration_bins": [
+      {
+        "mean_predicted_probability": 0.019007228373319748,
+        "observed_default_rate": 0.02275994250119789
+      },
+      {
+        "mean_predicted_probability": 0.03141789262425916,
+        "observed_default_rate": 0.03235082674335011
+      },
+      {
+        "mean_predicted_probability": 0.04124284157940422,
+        "observed_default_rate": 0.03450754852624011
+      },
+      {
+        "mean_predicted_probability": 0.0506689464626777,
+        "observed_default_rate": 0.04696860771627127
+      },
+      {
+        "mean_predicted_probability": 0.060893313668998875,
+        "observed_default_rate": 0.05534259702922856
+      },
+      {
+        "mean_predicted_probability": 0.07287295631638313,
+        "observed_default_rate": 0.07021327582075246
+      },
+      {
+        "mean_predicted_probability": 0.08798267007819814,
+        "observed_default_rate": 0.09465612269350587
+      },
+      {
+        "mean_predicted_probability": 0.10902452389274808,
+        "observed_default_rate": 0.11694224778336929
+      },
+      {
+        "mean_predicted_probability": 0.14211224147558535,
+        "observed_default_rate": 0.14593817397555714
+      },
+      {
+        "mean_predicted_probability": 0.21918670444098137,
+        "observed_default_rate": 0.21490177287973167
+      }
+    ]
+  },
+  "calibration_method_no_ext": "sigmoid",
+  "differences_no_ext_minus_lite": {
+    "roc_auc": 0.003960356465296355,
+    "average_precision": 0.0006334164780356921,
+    "brier_score": -8.039388055124108e-05,
+    "log_loss": -0.000673702586950542
+  },
+  "interpretation": "Descriptive research comparison. AUC/AP higher is better; Brier/log-loss lower is better. The existing Lite artifact is unchanged."
+}

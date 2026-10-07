@@ -6,9 +6,9 @@ PostgreSQL as a fallback. Keep RESEARCH_ONLY and release_ready=false.
 
 ## Shared prerequisites
 
-1. Supply real API/frontend HTTPS domains, DNS, provider account, exact trusted reverse
-   proxy IPs/CIDRs and a mounted Supabase CA certificate. Never set proxy trust to `*` or
-   `/0`. On VPS/Compose with host Caddy, trust the actual peer address observed by Uvicorn
+1. Supply real API/frontend HTTPS domains, DNS, provider account and a mounted Supabase
+   CA certificate. Outside Render, configure exact trusted reverse proxy IPs/CIDRs;
+   never set proxy trust to `*` or `/0`. On VPS/Compose with host Caddy, trust the actual peer address observed by Uvicorn
    (Docker bridge peer for Compose, loopback for host systemd). Provider ingress must
    overwrite forwarded headers; firewall the application port from other clients.
 2. Copy production.env.example or staging.env.example into a private secrets store.
@@ -22,7 +22,8 @@ PostgreSQL as a fallback. Keep RESEARCH_ONLY and release_ready=false.
 4. From services/api, set PYTHONPATH to that directory and run:
    `python -m scripts.deployment_validation --env-file /private/staging.env --database --artifacts`.
    Run `--https` after deployment. A passing validator does not certify backups or alert delivery.
-5. Build on Linux with Docker, scan the resulting images, and store immutable private tags:
+5. For Docker-based hosts (Railway, Coolify, Compose, or VPS), build on Linux, scan the
+   images, and store immutable private tags:
 
 ```sh
 docker build -f deploy/api.Dockerfile -t "$CREDITIQ_API_IMAGE" .
@@ -33,7 +34,9 @@ docker push "$CREDITIQ_WEB_IMAGE"
 
 Linux dependency installation/model loading must pass before release: existing artifact
 runtime versions were validated on Windows. Do not silently upgrade them to make a build
-pass. Verify both research dashboards in addition to a real Lite prediction.
+pass. Verify both research dashboards in addition to a real Lite prediction. Render's
+native-Python path below does not use Docker or these image commands. Its committed
+allowlisted bundle lives under deploy/render-assets/.
 Next rewrites are built with API_ORIGIN: use the **same** origin at build and runtime;
 rebuild the web image when changing the backend domain.
 
@@ -51,13 +54,18 @@ Do not deploy directly from Git without supplying the ignored artifact bundle.
 
 ## Render
 
-Use deploy/render.yaml as the Blueprint path. Create the creditiq-api-secrets environment
-group first, including all fields in the selected env template; supply a secret CA file
-and its actual mounted path. Set web API_ORIGIN at build and runtime.
-Git builds lack ignored artifacts: use a private prebuilt image deployment or a private
-build source containing the reviewed bundle. Configure the chosen image/tag in Render.
-After provisioning, put its deploy-hook URL in RENDER_DEPLOY_HOOK and run
-`python deploy/deploy.py render`. The hook contains a secret; never commit it.
+Use deploy/render.yaml as the Blueprint path. This is a native Python service connected
+to GitHub: root directory ., build command `pip install -r
+services/api/requirements-lock.txt && python deploy/prepare_render_assets.py`, start
+command `cd services/api && python -m scripts.start_server`, health path
+`/health/ready`. The root .python-version selects Python 3.12. Create the
+creditiq-api-secrets environment group first; supply the Supabase CA secret file at
+`/etc/secrets/supabase-ca.crt` and set all production variables. Keep the GitHub source
+repository private because the runtime bundle includes research Parquet files. On a
+Render web service, leave CREDITIQ_TRUSTED_PROXY_IPS unset: public HTTPS is enforced
+by Render's edge and Uvicorn proxy-header parsing is disabled. See
+Docs-CreditIQ/Deployment/RENDER_VERCEL_DEPLOYMENT_GUIDE.md for exact values and checks.
+No Render deploy hook or Docker image is required for this native path.
 
 ## Coolify
 

@@ -7,8 +7,8 @@ from app.auth.dependencies import require_csrf
 
 class TransportSafetyMiddleware:
     """Reject insecure deployed requests and keep unexpected errors out of server logs."""
-    def __init__(self, app, https_only=False):
-        self.app, self.https_only = app, https_only
+    def __init__(self, app, https_only=False, managed_https=False):
+        self.app, self.https_only, self.managed_https = app, https_only, managed_https
 
     async def __call__(self, scope, receive, send):
         if scope['type'] != 'http':
@@ -16,7 +16,7 @@ class TransportSafetyMiddleware:
         # Orchestrators probe health over private HTTP before routing TLS traffic.
         health_probe = scope['method'] == 'GET' and scope['path'] in (
             '/health/live', '/health/ready', '/api/v1/health/live', '/api/v1/health/ready')
-        if self.https_only and scope.get('scheme') != 'https' and not health_probe:
+        if self.https_only and not self.managed_https and scope.get('scheme') != 'https' and not health_probe:
             return await JSONResponse({'detail': 'HTTPS required'}, status_code=400)(scope, receive, send)
         started = False
 

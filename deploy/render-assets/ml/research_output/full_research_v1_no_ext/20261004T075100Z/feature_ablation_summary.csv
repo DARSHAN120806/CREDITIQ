@@ -1,0 +1,5 @@
+variant,feature_count,roc_auc,average_precision,brier_score,evaluation_cohort
+FULL_RESEARCH_V1_NO_EXT,22,0.6909992484504569,0.17368243783219822,0.07334597637422262,reserved policy partition; diagnostic only
+Lite feature subset (17),17,0.687994874263228,0.17428987511543262,0.07338526759958458,reserved policy partition; diagnostic only
+Without inquiry features,18,0.688204987248991,0.17325926094339503,0.07340032038369211,reserved policy partition; diagnostic only
+Without loan-to-goods ratio,21,0.6887109152015671,0.17463479778857544,0.07334538757087965,reserved policy partition; diagnostic only

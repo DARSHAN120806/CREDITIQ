@@ -1,0 +1,204 @@
+{
+  "run_id": "20261004T151458Z",
+  "contract": "FULL_RESEARCH_V1_NO_EXT",
+  "feature_count": 22,
+  "feature_columns": [
+    "age_years",
+    "years_employed",
+    "annual_income",
+    "requested_amount",
+    "quoted_monthly_payment",
+    "household_size",
+    "dependent_children",
+    "employment_type",
+    "education_level",
+    "occupation",
+    "housing_status",
+    "employment_tenure_missing",
+    "proposed_payment_income_ratio",
+    "principal_income_ratio",
+    "income_per_household_member",
+    "employed_age_ratio",
+    "payment_principal_ratio",
+    "credit_bureau_inquiries_1m",
+    "credit_bureau_inquiries_3m",
+    "credit_bureau_inquiries_12m",
+    "credit_bureau_inquiry_history_missing",
+    "loan_to_goods_price_ratio"
+  ],
+  "baseline_run_id": "20261004T075100Z",
+  "best_model": "xgboost",
+  "trained_at": "2026-10-04T15:35:38.736453+00:00",
+  "params": {
+    "n_estimators": 441,
+    "learning_rate": 0.08329844231669226,
+    "max_depth": 3,
+    "min_child_weight": 49,
+    "subsample": 0.9329770563201687,
+    "colsample_bytree": 0.5274034664069657,
+    "reg_lambda": 0.047050592819076476,
+    "reg_alpha": 0.00541524411940254
+  },
+  "calibration_method": "sigmoid",
+  "development_cv_auc": 0.6927982186282918,
+  "split_sizes": {
+    "calibration": 41733,
+    "development": 166932,
+    "policy": 27822,
+    "test": 41733
+  },
+  "split_source": "real_data_output\\artifacts\\lite\\runs\\20261002T140817Z-045430a7\\splits.json",
+  "dataset_sha256": "31b6e5f08704568a2923e23b3254f03aba5bc1a8177342d6d27191ca4466711f",
+  "splits_sha256": "6cdd57d04b10ed667dc62a484daf19e44db5c5b6952b921fe088296003cb80e3",
+  "search_budget": {
+    "optuna_trials": 5,
+    "outer_tune_rows": 10000,
+    "final_tune_rows": 166932,
+    "seed": 42
+  },
+  "test_metrics": {
+    "LightGBM": {
+      "roc_auc": 0.7047402078067326,
+      "average_precision": 0.17640892489750676,
+      "brier_score": 0.07304858306273268,
+      "log_loss": 0.26674857490989123,
+      "calibration_bins": [
+        {
+          "mean_predicted_probability": 0.019007228373319748,
+          "observed_default_rate": 0.02275994250119789
+        },
+        {
+          "mean_predicted_probability": 0.03141789262425916,
+          "observed_default_rate": 0.03235082674335011
+        },
+        {
+          "mean_predicted_probability": 0.04124284157940422,
+          "observed_default_rate": 0.03450754852624011
+        },
+        {
+          "mean_predicted_probability": 0.0506689464626777,
+          "observed_default_rate": 0.04696860771627127
+        },
+        {
+          "mean_predicted_probability": 0.060893313668998875,
+          "observed_default_rate": 0.05534259702922856
+        },
+        {
+          "mean_predicted_probability": 0.07287295631638313,
+          "observed_default_rate": 0.07021327582075246
+        },
+        {
+          "mean_predicted_probability": 0.08798267007819814,
+          "observed_default_rate": 0.09465612269350587
+        },
+        {
+          "mean_predicted_probability": 0.10902452389274808,
+          "observed_default_rate": 0.11694224778336929
+        },
+        {
+          "mean_predicted_probability": 0.14211224147558535,
+          "observed_default_rate": 0.14593817397555714
+        },
+        {
+          "mean_predicted_probability": 0.21918670444098137,
+          "observed_default_rate": 0.21490177287973167
+        }
+      ]
+    },
+    "XGBoost": {
+      "roc_auc": 0.7040715595262892,
+      "average_precision": 0.17596248629592864,
+      "brier_score": 0.07308308035135269,
+      "log_loss": 0.2667669355869293,
+      "calibration_bins": [
+        {
+          "mean_predicted_probability": 0.019556228878074934,
+          "observed_default_rate": 0.02156205079060853
+        },
+        {
+          "mean_predicted_probability": 0.03304812124701118,
+          "observed_default_rate": 0.02923556194584232
+        },
+        {
+          "mean_predicted_probability": 0.04251142841911761,
+          "observed_default_rate": 0.040258806613946804
+        },
+        {
+          "mean_predicted_probability": 0.05122176264076818,
+          "observed_default_rate": 0.047927150730889045
+        },
+        {
+          "mean_predicted_probability": 0.06092384012231258,
+          "observed_default_rate": 0.05869669381887877
+        },
+        {
+          "mean_predicted_probability": 0.07236881764985491,
+          "observed_default_rate": 0.06709801102324467
+        },
+        {
+          "mean_predicted_probability": 0.0869561375997891,
+          "observed_default_rate": 0.0932183081715792
+        },
+        {
+          "mean_predicted_probability": 0.1078914792406139,
+          "observed_default_rate": 0.1186196980589504
+        },
+        {
+          "mean_predicted_probability": 0.1405528989479235,
+          "observed_default_rate": 0.14378145219266714
+        },
+        {
+          "mean_predicted_probability": 0.2174920801681997,
+          "observed_default_rate": 0.21418303785337806
+        }
+      ]
+    }
+  },
+  "test_evaluation_note": "Same pinned final-test applicants as the existing LightGBM experiment. This cohort was previously inspected; results are a reused-holdout research benchmark, not new independent confirmation. No selection uses these test results.",
+  "metric_deltas": {
+    "roc_auc": -0.0006686482804434402,
+    "average_precision": -0.0004464386015781141,
+    "brier_score": 3.4497288620011224e-05,
+    "log_loss": 1.8360677038087303e-05
+  },
+  "research_ranking": [
+    "LightGBM",
+    "XGBoost"
+  ],
+  "ranking_basis": "Descriptive test Brier ascending, ROC-AUC descending tie-break; no promotion or model selection.",
+  "shap_interpretation": "Native exact Tree SHAP explains uncalibrated XGBoost raw margins, not calibrated probabilities or causal effects.",
+  "validation": {
+    "protected_artifacts_unchanged": true,
+    "protected_file_count": 42,
+    "model_reload_parity": true,
+    "shap_additivity": true,
+    "same_contract_partitions_labels": true
+  },
+  "versions": {
+    "xgboost": "3.4.1",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.3.5",
+    "pandas": "3.0.1",
+    "optuna": "5.0.0",
+    "joblib": "1.6.0"
+  },
+  "mode": "RESEARCH_ONLY",
+  "release_ready": false,
+  "artifact_checksums": {
+    "calibration_comparison.png": "4867849fce216caaf50683b2bf93feb44036159b60b0c5fc624272c3444da131",
+    "calibration_results.json": "113faf179559778c03d4004d6e3d460596e6a4391e03eccef3ccb6184f4483df",
+    "development_fold_lineage.json": "99440e6c99998924c00e0bcc99a062251a54b6d78c0d22ecd23a7456813642a3",
+    "development_model_selection.csv": "eaed215b2d1540d32b99c75ea61535953285d83f1bae48dc7c32e40d99a9106c",
+    "development_selection_folds.csv": "a7682518be475bed9018940fd1f7fbc674a1150ffb1b1295e8794a384495a97c",
+    "model_comparison.csv": "8582bd0be79bcafe8602b1e854ee0d2c6634f372848331e99e49b435f2bc9f2c",
+    "model_comparison.json": "4c50d7f6b107b700e03c8f29145021b4a86d43f71c79d2f34399a58af059de90",
+    "paired_test_predictions.csv": "080cf6bcc4061d44b6c3ec450f303629316ac899e6310a6fc21a148aceecc307",
+    "paired_test_predictions.parquet": "94393b8f89a4b8512c2ac7a7f833208239d75d994ff04e84e75a498877773a99",
+    "preserved_artifact_hashes.json": "e8d2d43ca7496dec87d4ee6858e9a9d2da62d7d8c0f4e4654b6da01024d3269c",
+    "shap_feature_importance.csv": "b8ecea536fe064f839c2aaa91dfb325395377d0614597d972469cf72c4a0eff4",
+    "shap_top_20.png": "482b9c92e8b0c710cdb8fb55d1023bccde844c2f3f734dc9d5fa65f48d5a61d8",
+    "top_20_features.csv": "bb77b81e9af2323f4097aebd5ebbd7dbfca34e70fbef344c74615f256a72bb1d",
+    "training_metadata.json": "cf4e3890519272a785e0ee27c180a37a6d260e11ef8355d9d2f82ef1ecd53416",
+    "xgboost_model.joblib": "db644a329b149c09744cd328cfe3d4447b1b1f782fd49baa16c9f78c30cba43b"
+  }
+}
