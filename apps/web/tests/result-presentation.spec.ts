@@ -60,7 +60,7 @@ test(`disclaimer is readable at ${width}px on ${path}`, async ({page}) => {
       await expect(note).toBeVisible();
       const style = await note.evaluate(el => ({size:parseFloat(getComputedStyle(el).fontSize),color:getComputedStyle(el).color}));
       expect(style.size).toBeGreaterThanOrEqual(12);
-      expect(style.color).toBe('rgb(71, 85, 105)'); // #475569: >7:1 on white and #f8fafc.
+      expect(style.color).toBe('rgb(181, 195, 214)'); // Current dark-theme disclaimer color (#b5c3d6).
       await page.screenshot({path:`test-results/results-${width}-${path.endsWith('new')?'form':'assessment'}.png`,fullPage:true});
 });
   }

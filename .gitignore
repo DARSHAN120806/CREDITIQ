@@ -23,3 +23,7 @@ apps/web/.next-installment-test/
 ml/full_dataset_output/
 ml/.test-tmp-full-*/
 ml/research_output/
+.deployment-assets/
+.deployment-context/
+production.env
+staging.env

@@ -11,7 +11,7 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=Settings().database_url, target_metadata=target_metadata,
+        url=Settings().migration_url, target_metadata=target_metadata,
         literal_binds=True, dialect_opts={"paramstyle": "named"}, compare_type=True,
     )
     with context.begin_transaction():
@@ -28,7 +28,7 @@ def run_migrations_online() -> None:
             context.run_migrations()
         return
     engine = create_engine(
-        Settings().database_url, poolclass=pool.NullPool,
+        Settings().migration_url, poolclass=pool.NullPool, hide_parameters=True,
         connect_args={"connect_timeout": 5},
     )
     try:

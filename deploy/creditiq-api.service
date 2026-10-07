@@ -1,0 +1,29 @@
+[Unit]
+Description=CreditIQ API
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+User=creditiq
+Group=creditiq
+WorkingDirectory=/opt/creditiq/current/services/api
+EnvironmentFile=/etc/creditiq/runtime.env
+Environment=PYTHONPATH=/opt/creditiq/current/services/api
+Environment=BIND_HOST=127.0.0.1
+Environment=PORT=8000
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=MPLCONFIGDIR=/tmp/matplotlib
+ExecStart=/opt/creditiq/current/services/api/.venv/bin/python -m scripts.start_server
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target

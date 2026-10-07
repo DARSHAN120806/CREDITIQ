@@ -1,6 +1,59 @@
+# Supabase publishable-key audit - 2026-10-07
+
+- Repository/client/config audit complete: no supabase-js, createClient, SUPABASE_URL/anon/publishable-key use, /rest/v1 calls, Supabase Auth or Storage integration.
+- The application connects only to PostgreSQL through SQLAlchemy/psycopg and routes frontend requests to FastAPI. A Supabase publishable key is unnecessary.
+- Application Data API/key dependency verification marked complete. Dashboard exposed-schema toggle remains a separate external setting and is explicitly not claimed as inspected.
+- Report: ../Validation/SUPABASE_PUBLISHABLE_KEY_AUDIT.md. Research-only status retained.
+
+# Deployment implementation checkpoint - 2026-10-07
+
+- Shared fail-closed production/staging validator, safe startup diagnostics and explicit proxy-aware entrypoint implemented.
+- Added secure env templates, read-only deployment validation, allowlisted artifact packaging, Docker/Compose/Railway/Render/Coolify/systemd adapters and monitoring templates.
+- Tests: 172 full backend + 2 new tool tests passed; 42 Supabase rollback-only smoke checks passed; frontend typecheck/build passed; negative localhost deployment build rejected.
+- Dependency scans: zero known vulnerabilities (62 backend pins; frontend production audit). Bundle: 30 files/hash checks; clean upload context excludes actual secrets.
+- No provider deployment, Linux image build, restore drill or alert delivery claimed. Docker unavailable; provider/domains/ingress/secrets setup pending.
+- Read ../Deployment/DEPLOYMENT_READINESS_AUDIT.md for requirement-by-requirement PASS/FAIL. PRODUCTION_READY=false; mode=RESEARCH_ONLY; release_ready=false.
+
+# Restricted runtime role checkpoint - 2026-10-07
+
+- Final validation: 154 distinct backend tests pass across full suite + targeted security rerun; 42 Supabase smoke checks pass. Existing Starlette/httpx warning only.
+
+- Active Supabase configuration switched from postgres to creditiq_runtime after 42 rollback-only workflow checks.
+- No role memberships/admin flags/ownership; SELECT+INSERT on 19 tables, column UPDATE on 3; no DELETE/TRUNCATE/migration access.
+- 41 backend-only RLS policies; anon/authenticated/service_role remain denied.
+- Health live/ready 200; 312 application rows and Alembic 20261003_0003 unchanged.
+- Exact SQL and operator provisioning/validation utilities added; operator secret kept outside runtime .env.
+- ../Validation/RUNTIME_DATABASE_ROLE_REPORT.md records evidence, inherited PUBLIC TEMP limitation and remaining deployment work.
+- No business logic/auth/model changes; mode=RESEARCH_ONLY; release_ready=false.
+
+# Supabase RLS checkpoint - 2026-10-07
+
+- Applied ENABLE/FORCE RLS to 28 application tables and alembic_version; no direct-access policies.
+- Revoked PUBLIC/anon/authenticated/service_role schema, table, column and public function access; hardened postgres defaults.
+- Verified role-switched denial, default-deny row isolation, unchanged 312 application rows and revision 20261003_0003.
+- Added operator utility services/api/scripts/secure_supabase_access.py and ../Validation/RLS_AUDIT_REPORT.md.
+- Pending: keyed Data API/control-plane exposure check, restricted backend runtime role and other deployment blockers.
+- No application/authentication/model logic changed; mode=RESEARCH_ONLY; release_ready=false.
+
+# Production hardening checkpoint - 2026-10-07
+
+- Explicit DB config, startup/readiness queries, timeouts, HTTPS/role gates and sanitized errors implemented.
+- Validation: backend 153 passed, browser 38 passed, typecheck/build passed, production npm audit zero vulnerabilities.
+- Blocked: Supabase anon/authenticated grants on 28 non-RLS tables, privileged runtime role, hosted HTTPS/image validation.
+- No remote grant/schema/model changes. mode=RESEARCH_ONLY; release_ready=false; production_ready=false.
+
 # CreditIQ project progress
 
-## XGBoost FULL_RESEARCH_V1_NO_EXT benchmark — COMPLETED AND VALIDATED, 4 October 2026
+## Supabase PostgreSQL migration â€” pooler transport verified, auth pending, 7 October 2026
+
+- Active ignored `services/api/.env` targets the supplied Supabase Session Pooler at `aws-0-ap-south-1.pooler.supabase.com:5432`, database `postgres`, with the supplied project-scoped user and TLS `verify-full`; JWT/cookie/auth settings preserved. Prior local values saved under ignored `.postgres/local-runtime.env.backup`.
+- The example file is placeholder-only. Rotate the Supabase database password before authentication because a prior diagnostic output included its value; update the ignored `.env` locally and do not share the new secret.
+- Public DNS resolves the pooler to IPv4. Both addresses passed TCP and TLS 1.3 hostname/certificate verification. This verifies transport only; SQLAlchemy authentication, remote revision and schema remain unverified. Direct endpoint remains IPv6-only and unroutable here.
+- Local source PostgreSQL 18.6, revision `20261003_0003`: 28 application tables, 280 rows, 10,557,119 bytes. Local server stopped after read-only inspection.
+- SQLAlchemy connection to Supabase failed before authentication. No Alembic migrations, Supabase table creation, or data transfer occurred. Local remains authoritative.
+- Details and downtime estimate: `../Validation/SUPABASE_VALIDATION_REPORT.md`. `mode=RESEARCH_ONLY`; `release_ready=false`.
+
+## XGBoost FULL_RESEARCH_V1_NO_EXT benchmark â€” COMPLETED AND VALIDATED, 4 October 2026
 
 Report: [XGBOOST_FULL_RESEARCH_REPORT.md](XGBOOST_FULL_RESEARCH_REPORT.md). Tests, preservation checks, and screenshots: [XGBOOST_FULL_RESEARCH_VALIDATION.md](XGBOOST_FULL_RESEARCH_VALIDATION.md).
 
@@ -12,18 +65,18 @@ Report: [XGBOOST_FULL_RESEARCH_REPORT.md](XGBOOST_FULL_RESEARCH_REPORT.md). Test
 - [x] XGBoost: ROC-AUC 0.704072, AP 0.175962, Brier 0.073083, log loss 0.266767. LightGBM is slightly better on all four point estimates. Research ranking: LightGBM first, XGBoost second; no promotion. Reports and changelog finalized. Finished model reporting can be resumed with `--resume-run 20261004T151458Z` without retraining.
 - [x] Test reuse disclosed explicitly; ranking is descriptive only. `mode=RESEARCH_ONLY`; `release_ready=false`.
 
-## Customer Segmentation V1 — IMPLEMENTED, VALIDATED, 4 October 2026
+## Customer Segmentation V1 â€” IMPLEMENTED, VALIDATED, 4 October 2026
 
 Validation details, metrics, profiles, limitations, artifact hashes, and screenshots: [CUSTOMER_SEGMENTATION_VALIDATION_REPORT.md](CUSTOMER_SEGMENTATION_VALIDATION_REPORT.md).
 
 - [x] Built deterministic K-Means research pipeline using the pinned FULL_RESEARCH_V1_NO_EXT training data and its 22-feature contract. TARGET is excluded from fitting, selection, profiling, and descriptions; SK_ID_CURR is retained only in row assignments.
-- [x] Evaluated K=2–10 using silhouette, Davies-Bouldin, and inertia; filtered clusters below 1% and selected K=4 by documented criteria. Final model fit all 278,220 rows; repeat runs reproduced assignment checksum, profiles, and metrics.
+- [x] Evaluated K=2â€“10 using silhouette, Davies-Bouldin, and inertia; filtered clusters below 1% and selected K=4 by documented criteria. Final model fit all 278,220 rows; repeat runs reproduced assignment checksum, profiles, and metrics.
 - [x] Generated the model, assignments parquet, profile CSV, metrics JSON, PCA sample, run report, and latest pointer. Saved-model reload and fixed-sample predictions verified.
 - [x] Added read-only admin endpoint and `/admin/customer-segmentation` with neutral profiles, PCA, K diagnostics, methodology, and limitations. Existing admin RBAC denies ordinary users.
 - [x] Full backend suite: 115 passed; browser test: 1 passed; TypeScript check and production build passed. Desktop/mobile screenshots were captured and inspected. One existing Starlette/httpx deprecation warning remains.
 - [x] Lite and FULL research model artifacts/contracts, Installment Intelligence, prediction APIs, authentication behavior, schema, and migrations were untouched. No model training or lending decisions. `mode=RESEARCH_ONLY`; `release_ready=false`.
 
-## Admin Model Research Dashboard — IMPLEMENTED, 4 October 2026
+## Admin Model Research Dashboard â€” IMPLEMENTED, 4 October 2026
 
 Validation and screenshots: [MODEL_RESEARCH_DASHBOARD_REPORT.md](MODEL_RESEARCH_DASHBOARD_REPORT.md).
 
@@ -33,7 +86,7 @@ Validation and screenshots: [MODEL_RESEARCH_DASHBOARD_REPORT.md](MODEL_RESEARCH_
 - [x] Backend admin access/response tests: 16 passed; frontend TypeScript, dashboard browser/screenshot test (1 passed), and production build passed. Existing Starlette/httpx deprecation warning only.
 - [x] Desktop/mobile screenshots saved under `apps/web/test-results/`. Mode remains `RESEARCH_ONLY`; `release_ready=false`.
 
-## Borrowing Planner V1 + Loan Recommendation Engine V1 — IMPLEMENTED, VALIDATED, 4 October 2026
+## Borrowing Planner V1 + Loan Recommendation Engine V1 â€” IMPLEMENTED, VALIDATED, 4 October 2026
 
 The prior feasibility/design-only checkpoint below is superseded. See [BORROWING_PLANNER_API.md](BORROWING_PLANNER_API.md) and [BORROWING_PLANNER_VALIDATION.md](BORROWING_PLANNER_VALIDATION.md).
 
@@ -44,7 +97,7 @@ The prior feasibility/design-only checkpoint below is superseded. See [BORROWING
 - [x] Full backend suite: **115 passed, zero failures** (one existing Starlette/httpx TestClient deprecation warning); no migrations were applied.
 - [ ] Remains RESEARCH_ONLY and `release_ready=false`; calculations are illustrative and use unverified user-declared inputs.
 
-## BORROWING PLANNER + LOAN RECOMMENDATION — FEASIBILITY/DESIGN COMPLETE, IMPLEMENTATION NOT STARTED, 4 OCTOBER 2026
+## BORROWING PLANNER + LOAN RECOMMENDATION â€” FEASIBILITY/DESIGN COMPLETE, IMPLEMENTATION NOT STARTED, 4 OCTOBER 2026
 
 Design documents: [PLANNER_DATASET_FEASIBILITY.md](PLANNER_DATASET_FEASIBILITY.md), [BORROWING_PLANNER_DESIGN.md](BORROWING_PLANNER_DESIGN.md), and [LOAN_RECOMMENDATION_ENGINE_DESIGN.md](LOAN_RECOMMENDATION_ENGINE_DESIGN.md).
 
@@ -53,7 +106,7 @@ Design documents: [PLANNER_DATASET_FEASIBILITY.md](PLANNER_DATASET_FEASIBILITY.m
 - [x] Confirmed Home Credit historical rows cannot fill a signed-in user's current finances; current expenses, debts, income basis, savings and goals require user entry or a future verified connection. No dataset, model, API, authentication, database or frontend behavior was modified. Retraining is not required for the proposed calculations.
 - [ ] Implementation remains a future milestone. Preserve Lite, FULL_RESEARCH_V1_NO_EXT, Installment Intelligence V1, existing APIs/authentication, and `release_ready=false`.
 
-## FULL_RESEARCH_V1_NO_EXT — TRAINED AND EVALUATED, 4 October 2026
+## FULL_RESEARCH_V1_NO_EXT â€” TRAINED AND EVALUATED, 4 October 2026
 
 Report: [ml/FULL_RESEARCH_V1_NO_EXT_REPORT.md](ml/FULL_RESEARCH_V1_NO_EXT_REPORT.md). Canonical isolated contract: [ml/research_contracts/FULL_RESEARCH_V1_NO_EXT.json](ml/research_contracts/FULL_RESEARCH_V1_NO_EXT.json); reproducible runner: [ml/tools/full_research_v1_no_ext.py](ml/tools/full_research_v1_no_ext.py); run output: `ml/research_output/full_research_v1_no_ext/20261004T075100Z/`.
 
@@ -62,7 +115,7 @@ Report: [ml/FULL_RESEARCH_V1_NO_EXT_REPORT.md](ml/FULL_RESEARCH_V1_NO_EXT_REPORT
 - [x] Saved calibration comparison, SHAP importance/top 20, policy-partition ablation, model and metadata. No other model family trained; Lite model, contracts, APIs and production paths unchanged. `release_ready=false`, `mode=RESEARCH_ONLY`.
 - [ ] Validate source availability for all 22 features, TARGET meaning/horizon, fairness, temporal/external performance, and predeclare acceptance criteria before considering application integration.
 
-## FULL_RESEARCH_V1 — DATASET BUILT, RESEARCH TRAINING READY, 4 October 2026
+## FULL_RESEARCH_V1 â€” DATASET BUILT, RESEARCH TRAINING READY, 4 October 2026
 
 Authoritative handoff: [FULL_RESEARCH_V1_READINESS.md](FULL_RESEARCH_V1_READINESS.md). Separate contract is [ml/research_contracts/FULL_RESEARCH_V1.json](ml/research_contracts/FULL_RESEARCH_V1.json); builder is [ml/tools/full_research_v1.py](ml/tools/full_research_v1.py). Final output directory: `ml/research_output/full_research_v1/20261004-delivery/`.
 
@@ -74,7 +127,7 @@ Authoritative handoff: [FULL_RESEARCH_V1_READINESS.md](FULL_RESEARCH_V1_READINES
 
 Research contract status means suitable for a controlled model-training experiment, not production. Existing Lite performance figures do not measure this feature contract. Historical milestone sections below are unchanged.
 
-## Installment Intelligence V1 — COMPLETE, 4 October 2026
+## Installment Intelligence V1 â€” COMPLETE, 4 October 2026
 
 This is the authoritative current checkpoint. Earlier sections below are historical snapshots; their Coming Soon, table-count and pending-work statements are superseded here. See [INSTALLMENT_V1_VALIDATION.md](INSTALLMENT_V1_VALIDATION.md) for the complete file inventory, API contracts, tests, commands and limitations, and [INSTALLMENT_ANALYSIS_ARCHITECTURE.md](INSTALLMENT_ANALYSIS_ARCHITECTURE.md) for implemented formulas and storage boundaries.
 
@@ -94,7 +147,7 @@ No scoped implementation or test blocker remains. Input completeness is self-dec
 
 Recommended next milestone: Full-history data feasibility and feature-contract reconciliation before any separately authorized model experiment. Do not reimplement this milestone or retrain the pinned Lite model. Restart existing application processes if needed to load saved changes.
 
-## Phase 2 consumer UI and financial insights — COMPLETE, 3 October 2026
+## Phase 2 consumer UI and financial insights â€” COMPLETE, 3 October 2026
 
 Synchronized with the saved checkpoint; continued existing implementation without recreating completed milestones. All requested Phase 2 UI work is complete and validated. See [UI_PHASE2_REPORT.md](UI_PHASE2_REPORT.md) for the file-by-file inventory, formulas, limitations and screenshot evidence. The historical sections below describe earlier states; this section is authoritative for current Phase 2 status.
 
@@ -113,7 +166,7 @@ Backend remains mode=RESEARCH_ONLY and release_ready=false. Admin remains read-o
 
 Remaining: future installment analysis implementation only if requested; deployed Supabase verification and deployment remain outside this phase. No Phase 2 validation blockers remain. Resume by reading this section and UI_PHASE2_REPORT.md; do not reimplement Phase 2 or retrain models.
 
-## Research prototype expansion — COMPLETE, 3 October 2026
+## Research prototype expansion â€” COMPLETE, 3 October 2026
 
 The user's current request supersedes the earlier stop-at-Milestone-3 boundary. Reuse all completed schema/authentication and deliver synchronous Lite application submission, owned reads/results/history, read-only admin APIs and a Next.js frontend. No deployment, retraining, ML artifact edits, manual review workflow or production hardening.
 
@@ -138,12 +191,12 @@ Current deliverables:
 Historical checkpoints below remain records of earlier milestones.
 
 
-**Final stop checkpoint — 3 October 2026:** Milestone 3 is complete. Implementation stopped by user instruction; this update is documentation only. AUTH_VALIDATION.md records the full file inventory, architecture, security/session contracts, migration history, test evidence, limitations and recommended Milestone 4 scope. Final backend result: 63 passed, one existing warning; current revision 20261003_0002. No new tests or implementation changes after the stop instruction. No Milestone 4 work started; ML unchanged, RESEARCH_ONLY, release_ready=false.
+**Final stop checkpoint â€” 3 October 2026:** Milestone 3 is complete. Implementation stopped by user instruction; this update is documentation only. AUTH_VALIDATION.md records the full file inventory, architecture, security/session contracts, migration history, test evidence, limitations and recommended Milestone 4 scope. Final backend result: 63 passed, one existing warning; current revision 20261003_0002. No new tests or implementation changes after the stop instruction. No Milestone 4 work started; ML unchanged, RESEARCH_ONLY, release_ready=false.
 
 
-## Milestone 3 — COMPLETE: authentication and authorization
+## Milestone 3 â€” COMPLETE: authentication and authorization
 
-3 October 2026. Milestones 1–2 are complete and preserved. Read all five tracking/validation sources; verified the existing PostgreSQL runtime connection.
+3 October 2026. Milestones 1â€“2 are complete and preserved. Read all five tracking/validation sources; verified the existing PostgreSQL runtime connection.
 
 - [x] Step 1: synchronize scope and inspect existing user/profile/session/audit tables.
 - [x] Step 2: added strict secret/cookie/origin settings, Argon2id/JWT/signed-CSRF primitives, bounded request bodies, redacted validation errors and additive revision 20261003_0002 (three indexes only). Development upgrade succeeded; original migration preserved.
@@ -177,7 +230,7 @@ Next milestone recommendation: ownership-enforced application drafts/revisions, 
 
 The Milestone 2 and Milestone 1 sections below are historical snapshots. Their deferred-auth statements are superseded by this checkpoint.
 
-## Milestone 2 — complete, 3 October 2026
+## Milestone 2 â€” complete, 3 October 2026
 
 Scope: database models/schema, constraints/indexes, Alembic migrations, migration tests and PostgreSQL connectivity only. Milestone 1 remains complete; its checkpoint below is historical.
 
@@ -216,7 +269,7 @@ Archived Milestone 1 checkpoint, 2 October 2026. PROJECT_STATUS_REPORT.md retain
 
 ## Existing ML status
 
-- C1–C5 remediation and real Lite training/evaluation completed; last readiness audit reproduced the model and passed 45 ML tests.
+- C1â€“C5 remediation and real Lite training/evaluation completed; last readiness audit reproduced the model and passed 45 ML tests.
 - Real Lite run: 20261002T140817Z-045430a7, LightGBM with sigmoid calibration; release_ready=false.
 - Real Lite SHAP outputs, Full real-data training/segmentation and production acceptance remain open. No ML files, dependencies, metadata or artifacts changed in Milestone 1.
 

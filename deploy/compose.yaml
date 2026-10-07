@@ -1,0 +1,24 @@
+services:
+  api:
+    image: ${CREDITIQ_API_IMAGE:?Set an immutable private API image tag}
+    env_file: ${CREDITIQ_RUNTIME_ENV_FILE:?Set absolute private runtime env file}
+    environment:
+      PORT: "8000"
+    volumes:
+      - ${CREDITIQ_CA_FILE:?Set absolute CA file}:/run/secrets/supabase-ca.crt:ro
+    ports: ["127.0.0.1:8000:8000"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 2g
+  web:
+    image: ${CREDITIQ_WEB_IMAGE:?Set an immutable private web image tag}
+    environment:
+      API_ORIGIN: ${API_ORIGIN:?Set public HTTPS backend origin used at build}
+      PORT: "3000"
+    ports: ["127.0.0.1:3000:3000"]
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

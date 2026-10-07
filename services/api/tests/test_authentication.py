@@ -1,6 +1,6 @@
 """Authentication HTTP and race tests against the restricted PostgreSQL app role."""
 from concurrent.futures import ThreadPoolExecutor
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import os
 from types import SimpleNamespace
 import uuid
@@ -56,7 +56,7 @@ def api(owner_engine):
     settings = Settings(_env_file=None, app_env='test', lite_enabled=False, jwt_secret='auth-test-secret-' * 4,
         cookie_secure=False, auth_origins=[ORIGIN], auth_ip_limit=1000, auth_account_limit=100,
         pg_host='127.0.0.1', pg_port=55432, pg_database='creditiq_migration_test',
-        pg_user='creditiq_app', pg_password=configured.pg_password, pg_sslmode='disable')
+        pg_user='creditiq_app', pg_password=configured.pg_password, pg_sslmode='disable', db_hosting='local')
     app = create_app(settings)
 
     @app.get('/_test/admin', dependencies=[Depends(require_role('ADMIN'))])
@@ -206,6 +206,18 @@ def test_refresh_rotates_preserves_expiry_and_revokes_old_access(api):
     assert client.get('/api/v1/me').status_code == 401
     restore(client, current)
     assert client.get('/api/v1/me').status_code == 200
+
+
+def test_refresh_uses_database_clock_when_application_clock_lags(api, monkeypatch):
+    client, _, engine = api
+    signed_in(client)
+    monkeypatch.setattr(auth_service, 'utcnow', lambda: datetime(2000, 1, 1, tzinfo=timezone.utc))
+    assert mutate(client, 'POST', '/api/v1/auth/refresh').status_code == 200
+    with Session(engine) as db:
+        rows = db.scalars(select(AuthSession).order_by(AuthSession.created_at)).all()
+        assert len(rows) == 2
+        assert rows[0].revoked_at >= rows[0].created_at
+        assert rows[1].revoked_at is None
 
 
 def test_refresh_replay_revokes_current_descendants(api):

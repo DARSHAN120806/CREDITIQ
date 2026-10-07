@@ -66,7 +66,7 @@ def test_failure_rolls_back_import_and_audit(api,monkeypatch):
     client,_,engine=api;signed_in(client)
     def fail(*args):raise RuntimeError('response failure')
     monkeypatch.setattr(service,'view',fail)
-    with pytest.raises(RuntimeError,match='response failure'):send(client)
+    assert send(client).status_code == 500
     with Session(engine) as db:
         assert db.scalar(select(func.count()).select_from(M.InstallmentImport))==0
         assert db.scalar(select(func.count()).select_from(M.AuditEvent).where(M.AuditEvent.action=='INSTALLMENT_HISTORY_ANALYZED'))==0

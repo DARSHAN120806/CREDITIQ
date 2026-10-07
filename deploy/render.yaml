@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: creditiq-api
+    runtime: docker
+    dockerfilePath: ./deploy/api.Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/ready
+    envVars:
+      - fromGroup: creditiq-api-secrets
+  - type: web
+    name: creditiq-web
+    runtime: docker
+    dockerfilePath: ./deploy/web.Dockerfile
+    dockerContext: .
+    healthCheckPath: /login
+    envVars:
+      - key: API_ORIGIN
+        sync: false

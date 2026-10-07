@@ -1,0 +1,10 @@
+# Supply domains and ACME_EMAIL on the proxy host; Caddy obtains/renews HTTPS certs.
+{
+    email {$ACME_EMAIL}
+}
+{$FRONTEND_DOMAIN} {
+    reverse_proxy 127.0.0.1:3000
+}
+{$API_DOMAIN} {
+    reverse_proxy 127.0.0.1:8000
+}

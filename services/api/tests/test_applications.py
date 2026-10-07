@@ -121,8 +121,7 @@ def test_model_failure_rolls_back_everything(api, model, monkeypatch):
     def fail(*args):
         raise RuntimeError('injected scoring failure')
     monkeypatch.setattr(model, 'score', fail)
-    with pytest.raises(RuntimeError, match='injected'):
-        submit(client)
+    assert submit(client).status_code == 500
     with Session(engine) as db:
         for table in (M.LoanApplication, M.ApplicationVersion, M.LoanQuote, M.ModelVersion,
                       M.FeatureSnapshot, M.Prediction, M.PolicyVersion, M.ApplicationHistory):
@@ -143,8 +142,7 @@ def test_late_failure_rolls_back_prediction_and_history(api, model, monkeypatch)
     def fail(*args):
         raise RuntimeError('injected response failure')
     monkeypatch.setattr(service, 'application_view', fail)
-    with pytest.raises(RuntimeError, match='injected'):
-        submit(client)
+    assert submit(client).status_code == 500
     with Session(engine) as db:
         for table in (M.LoanApplication, M.ApplicationVersion, M.FeatureSnapshot, M.Prediction,
                       M.RiskScore, M.Decision, M.ApplicationHistory):

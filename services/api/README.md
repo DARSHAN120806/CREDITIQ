@@ -22,7 +22,7 @@ Edit `.env` with your local PostgreSQL connection settings and a freshly generat
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Visit `http://127.0.0.1:8000/api/v1/health/live` or `/docs`. Startup creates a lazy SQLAlchemy engine and session factory; it does not connect to PostgreSQL, create tables, run migrations or load an ML model. Liveness is not database/model readiness. Milestone 2 verified a separate local PostgreSQL 18.6 cluster on 127.0.0.1:55432, development database creditiq, restricted runtime role creditiq_app, and disposable database creditiq_migration_test. The two existing Windows PostgreSQL instances were left unchanged.
+Visit `http://127.0.0.1:8000/api/v1/health/live` or `/docs`. Startup validates explicit database settings, connects with SELECT 1, rejects elevated production roles, and loads the pinned Lite model. It does not create tables or run migrations. /health/live is process liveness; /health/ready executes a real DB query (both also have /api/v1 aliases). Production database/security configuration is documented in [ENVIRONMENT_VARIABLES_REFERENCE.md](../../Docs-CreditIQ/Deployment/ENVIRONMENT_VARIABLES_REFERENCE.md) and [DEPLOYMENT_CHECKLIST.md](../../Docs-CreditIQ/Deployment/DEPLOYMENT_CHECKLIST.md). Milestone 2 verified a separate local PostgreSQL 18.6 cluster on 127.0.0.1:55432, development database creditiq, restricted runtime role creditiq_app, and disposable database creditiq_migration_test. The two existing Windows PostgreSQL instances were left unchanged.
 
 ## Configuration
 

@@ -5,7 +5,7 @@ from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
-from sqlalchemy import event
+from unittest.mock import MagicMock, patch
 
 from app.core.config import API_ROOT, Settings
 from app.db.base import Base
@@ -14,14 +14,15 @@ from app.main import create_app
 
 
 def test_liveness_without_database_and_without_domain_routes():
-    with TestClient(create_app(Settings(_env_file=None, app_env="test", lite_enabled=False, jwt_secret='foundation-test-secret-' * 3))) as client:
-        engine = client.app.state.session_factory.kw["bind"]
-
-        @event.listens_for(engine, "do_connect")
-        def no_database(*args, **kwargs):
-            pytest.fail("Liveness must not connect to PostgreSQL")
-
+    settings = Settings(_env_file=None, app_env='test', lite_enabled=False,
+                        jwt_secret='foundation-test-secret-' * 3, db_hosting='local',
+                        pg_host='test.invalid', pg_port=5432, pg_database='test',
+                        pg_user='test', pg_password='test-password')
+    with patch('app.main.build_engine', return_value=MagicMock()) as build, TestClient(create_app(settings)) as client:
+        build.return_value.connect.reset_mock()  # Startup checks DB; liveness itself must not.
         assert client.get("/api/v1/health/live").json() == {"status": "ok"}
+        assert client.get('/health/live').json() == {'status': 'ok'}
+        build.return_value.connect.assert_not_called()
         paths = set(client.get("/openapi.json").json()["paths"])
         assert '/api/v1/auth/login' in paths and '/api/v1/me' in paths
         assert '/api/v1/applications' in paths and '/api/v1/admin/statistics' in paths
@@ -31,7 +32,8 @@ def test_liveness_without_database_and_without_domain_routes():
 def test_environment_settings_and_password_handling(monkeypatch):
     monkeypatch.setenv("CREDITIQ_PG_PORT", "5433")
     monkeypatch.setenv("CREDITIQ_PG_PASSWORD", "a@b:%/secret")
-    settings = Settings(_env_file=None)
+    settings = Settings(_env_file=None, db_hosting='local', pg_host='test.invalid',
+                        pg_database='test', pg_user='test')
     assert settings.database_url.port == 5433
     assert settings.database_url.password == "a@b:%/secret"
     assert "a@b:%/secret" not in repr(settings)
@@ -42,7 +44,9 @@ def test_environment_settings_and_password_handling(monkeypatch):
         Settings(_env_file=None, db_pool_size=0)
 
 
-def test_alembic_offline_schema_without_connection():
+def test_alembic_offline_schema_without_connection(monkeypatch):
+    monkeypatch.setenv('CREDITIQ_MIGRATION_DATABASE_URL',
+                      'postgresql+psycopg://operator:test-password@test.supabase.com:5432/test?sslmode=verify-full')
     output = StringIO()
     config = Config(str(API_ROOT / "alembic.ini"), output_buffer=output)
     command.upgrade(config, "head", sql=True)

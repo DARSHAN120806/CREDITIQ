@@ -1,0 +1,20 @@
+[Unit]
+Description=CreditIQ web
+After=network-online.target
+[Service]
+User=creditiq
+Group=creditiq
+WorkingDirectory=/opt/creditiq/current/apps/web
+EnvironmentFile=/etc/creditiq/web.env
+Environment=NODE_ENV=production
+Environment=CREDITIQ_DEPLOYMENT=true
+Environment=NEXT_TELEMETRY_DISABLED=1
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+UMask=0077
+[Install]
+WantedBy=multi-user.target

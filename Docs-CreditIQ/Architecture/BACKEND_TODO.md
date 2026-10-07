@@ -1,6 +1,54 @@
+# Deployment implementation checkpoint - 2026-10-07
+
+- Shared fail-closed production/staging validator, safe startup diagnostics and explicit proxy-aware entrypoint implemented.
+- Added secure env templates, read-only deployment validation, allowlisted artifact packaging, Docker/Compose/Railway/Render/Coolify/systemd adapters and monitoring templates.
+- Tests: 172 full backend + 2 new tool tests passed; 42 Supabase rollback-only smoke checks passed; frontend typecheck/build passed; negative localhost deployment build rejected.
+- Dependency scans: zero known vulnerabilities (62 backend pins; frontend production audit). Bundle: 30 files/hash checks; clean upload context excludes actual secrets.
+- No provider deployment, Linux image build, restore drill or alert delivery claimed. Docker unavailable; provider/domains/ingress/secrets setup pending.
+- Read ../Deployment/DEPLOYMENT_READINESS_AUDIT.md for requirement-by-requirement PASS/FAIL. PRODUCTION_READY=false; mode=RESEARCH_ONLY; release_ready=false.
+
+# Restricted runtime role checkpoint - 2026-10-07
+
+- Final validation: 154 distinct backend tests pass across full suite + targeted security rerun; 42 Supabase smoke checks pass. Existing Starlette/httpx warning only.
+
+- Active Supabase configuration switched from postgres to creditiq_runtime after 42 rollback-only workflow checks.
+- No role memberships/admin flags/ownership; SELECT+INSERT on 19 tables, column UPDATE on 3; no DELETE/TRUNCATE/migration access.
+- 41 backend-only RLS policies; anon/authenticated/service_role remain denied.
+- Health live/ready 200; 312 application rows and Alembic 20261003_0003 unchanged.
+- Exact SQL and operator provisioning/validation utilities added; operator secret kept outside runtime .env.
+- ../Validation/RUNTIME_DATABASE_ROLE_REPORT.md records evidence, inherited PUBLIC TEMP limitation and remaining deployment work.
+- No business logic/auth/model changes; mode=RESEARCH_ONLY; release_ready=false.
+
+# Supabase RLS checkpoint - 2026-10-07
+
+- Applied ENABLE/FORCE RLS to 28 application tables and alembic_version; no direct-access policies.
+- Revoked PUBLIC/anon/authenticated/service_role schema, table, column and public function access; hardened postgres defaults.
+- Verified role-switched denial, default-deny row isolation, unchanged 312 application rows and revision 20261003_0003.
+- Added operator utility services/api/scripts/secure_supabase_access.py and ../Validation/RLS_AUDIT_REPORT.md.
+- Pending: keyed Data API/control-plane exposure check, restricted backend runtime role and other deployment blockers.
+- No application/authentication/model logic changed; mode=RESEARCH_ONLY; release_ready=false.
+
+# Deployment hardening - 2026-10-07
+
+- [x] Explicit DB settings, startup/readiness queries, bounded waits, HTTPS/role gates and safe errors.
+- [x] Backend 153, browser 38 passed; typecheck/build passed; npm production audit zero.
+- [ ] Remove anon/authenticated application-table access or disable Data API exposure; verify negative access.
+- [ ] Provision restricted runtime role and complete hosted HTTPS/image/load/backup checks.
+- Full detail: ../Deployment/PRODUCTION_READINESS_REPORT.md.
+
 # CreditIQ backend TODO
 
-## FULL_RESEARCH_V1 — DATASET BUILT, RESEARCH TRAINING READY, 4 October 2026
+## Supabase hosting migration â€” pooler transport verified, auth pending, 7 October 2026
+
+- [x] Active `.env` points to supplied Supabase Session Pooler with verified TLS transport; local config backed up privately; authentication settings preserved.
+- [x] Confirmed local source has 28 app tables and 280 rows at revision `20261003_0003` (10,557,119 bytes).
+- [ ] Rotate database password (prior diagnostic output exposed it) and update `CREDITIQ_PG_PASSWORD` locally in ignored `.env`; do not send it in chat.
+- [ ] Verify SQLAlchemy login, inspect remote PostgreSQL identity/Alembic revision/schema read-only, then apply migrations only after confirming the remote state.
+- [ ] Export/import local rows during a write freeze; verify schema, per-table counts/hashes and auth/application workflows.
+- [ ] Complete cutover/rollback validation; estimate 15â€“30 minutes write downtime for this source size after connectivity works.
+- [ ] Full evidence and blockers: `../Validation/SUPABASE_VALIDATION_REPORT.md`.
+
+## FULL_RESEARCH_V1 â€” DATASET BUILT, RESEARCH TRAINING READY, 4 October 2026
 
 Authoritative handoff: [FULL_RESEARCH_V1_READINESS.md](FULL_RESEARCH_V1_READINESS.md). Separate contract is [ml/research_contracts/FULL_RESEARCH_V1.json](ml/research_contracts/FULL_RESEARCH_V1.json); builder is [ml/tools/full_research_v1.py](ml/tools/full_research_v1.py). Final output directory: `ml/research_output/full_research_v1/20261004-delivery/`.
 
@@ -12,7 +60,7 @@ Authoritative handoff: [FULL_RESEARCH_V1_READINESS.md](FULL_RESEARCH_V1_READINES
 
 Research contract status means suitable for a controlled model-training experiment, not production. Existing Lite performance figures do not measure this feature contract. Historical milestone sections below are unchanged.
 
-## Installment Intelligence V1 — COMPLETE, 4 October 2026
+## Installment Intelligence V1 â€” COMPLETE, 4 October 2026
 
 This is the authoritative current checkpoint. Earlier sections below are historical snapshots; their Coming Soon, table-count and pending-work statements are superseded here. See [INSTALLMENT_V1_VALIDATION.md](INSTALLMENT_V1_VALIDATION.md) for the complete file inventory, API contracts, tests, commands and limitations, and [INSTALLMENT_ANALYSIS_ARCHITECTURE.md](INSTALLMENT_ANALYSIS_ARCHITECTURE.md) for implemented formulas and storage boundaries.
 
@@ -32,7 +80,7 @@ No scoped implementation or test blocker remains. Input completeness is self-dec
 
 Recommended next milestone: Full-history data feasibility and feature-contract reconciliation before any separately authorized model experiment. Do not reimplement this milestone or retrain the pinned Lite model. Restart existing application processes if needed to load saved changes.
 
-## Phase 2 consumer UI and financial insights — COMPLETE, 3 October 2026
+## Phase 2 consumer UI and financial insights â€” COMPLETE, 3 October 2026
 
 Synchronized with the saved checkpoint; continued existing implementation without recreating completed milestones. All requested Phase 2 UI work is complete and validated. See [UI_PHASE2_REPORT.md](UI_PHASE2_REPORT.md) for the file-by-file inventory, formulas, limitations and screenshot evidence. The historical sections below describe earlier states; this section is authoritative for current Phase 2 status.
 
@@ -51,7 +99,7 @@ Backend remains mode=RESEARCH_ONLY and release_ready=false. Admin remains read-o
 
 Remaining: future installment analysis implementation only if requested; deployed Supabase verification and deployment remain outside this phase. No Phase 2 validation blockers remain. Resume by reading this section and UI_PHASE2_REPORT.md; do not reimplement Phase 2 or retrain models.
 
-## Research prototype expansion — COMPLETE, 3 October 2026
+## Research prototype expansion â€” COMPLETE, 3 October 2026
 
 The user's current request supersedes the earlier stop-at-Milestone-3 boundary. Reuse all completed schema/authentication and deliver synchronous Lite application submission, owned reads/results/history, read-only admin APIs and a Next.js frontend. No deployment, retraining, ML artifact edits, manual review workflow or production hardening.
 
@@ -76,10 +124,10 @@ Current deliverables:
 Historical checkpoints below remain records of earlier milestones.
 
 
-**Final stop checkpoint — 3 October 2026:** Milestone 3 is complete. Implementation stopped by user instruction; this update is documentation only. AUTH_VALIDATION.md records the full file inventory, architecture, security/session contracts, migration history, test evidence, limitations and recommended Milestone 4 scope. Final backend result: 63 passed, one existing warning; current revision 20261003_0002. No new tests or implementation changes after the stop instruction. No Milestone 4 work started; ML unchanged, RESEARCH_ONLY, release_ready=false.
+**Final stop checkpoint â€” 3 October 2026:** Milestone 3 is complete. Implementation stopped by user instruction; this update is documentation only. AUTH_VALIDATION.md records the full file inventory, architecture, security/session contracts, migration history, test evidence, limitations and recommended Milestone 4 scope. Final backend result: 63 passed, one existing warning; current revision 20261003_0002. No new tests or implementation changes after the stop instruction. No Milestone 4 work started; ML unchanged, RESEARCH_ONLY, release_ready=false.
 
 
-## Milestone 3 — complete
+## Milestone 3 â€” complete
 
 - [x] Read current tracking files and verify PostgreSQL.
 - [x] Implement security primitives/settings and supporting indexes; revision 20261003_0002 applied to development.
@@ -91,7 +139,7 @@ Updated 3 October 2026. Milestone 1 remains complete. **Milestone 2 database imp
 
 **Historical Milestone 1 verification:** 3 foundation tests passed (one TestClient deprecation warning), pip check passed, and Alembic was empty. Milestone 2 below supersedes that database status. Dependency versions remain captured in services/api/requirements-lock.txt.
 
-## Milestone 1 — foundation
+## Milestone 1 â€” foundation
 
 - [x] Inspect repository and retain existing ML structure.
 - [x] Create services/api with package placeholders, settings, FastAPI skeleton and liveness.
@@ -102,7 +150,7 @@ Updated 3 October 2026. Milestone 1 remains complete. **Milestone 2 database imp
 - [x] Run verification, capture installed dependency lock and record results.
 - [x] Add architecture/progress tracking and update historical status pointers.
 
-## Milestone 2 — database (complete)
+## Milestone 2 â€” database (complete)
 
 - [x] Inspect PostgreSQL installations and provision an isolated PostgreSQL 18.6 workspace cluster (127.0.0.1:55432); create development and disposable test databases and restricted runtime role.
 - [x] Implement all 24 approved SQLAlchemy storage models without authentication or prediction behavior.

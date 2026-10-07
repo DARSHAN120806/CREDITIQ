@@ -61,7 +61,7 @@ test('old saved record renders overlay and amber warning without rescoring',asyn
   await expect(page.locator('.assessment-cards .card').nth(1)).toContainText('0.0');
   const banner=page.getByRole('note',{name:'Data quality limitations'});
   await expect(banner).toContainText("Housing status 'Other' was not seen in the model's training data.");
-  await expect(banner).toHaveCSS('background-color','rgb(255, 251, 235)');
+  await expect(banner).toHaveCSS('background-color','rgba(120, 74, 12, 0.22)');
   expect(mutations).toEqual([]);
   await page.screenshot({path:'test-results/affordability-overlay-desktop.png',fullPage:true});
   await page.setViewportSize({width:390,height:844});

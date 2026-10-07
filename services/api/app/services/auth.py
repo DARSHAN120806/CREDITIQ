@@ -4,7 +4,7 @@ import re
 import secrets
 import uuid
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.auth.security import HASHER, digest_token, hash_password, utcnow, verify_password
@@ -38,7 +38,7 @@ def lock_user(db, user_id):
 def revoke_family(db, user_id, family_id):
     db.execute(update(AuthSession).where(AuthSession.user_id == user_id,
                AuthSession.token_family_id == family_id, AuthSession.revoked_at.is_(None))
-               .values(revoked_at=utcnow()))
+               .values(revoked_at=func.clock_timestamp()))
 
 
 def new_session(db, user, family_id, expires_at):
@@ -96,7 +96,9 @@ def rotate(db: Session, raw: str) -> SessionTokens:
         revoke_family(db, user.id, row.token_family_id)
         db.commit()
         raise AuthenticationError()
-    row.revoked_at = utcnow()
+    # Persist revocation using the same clock that wrote created_at. Application hosts
+    # can be slightly behind PostgreSQL and violate ck_auth_sessions_revocation_time.
+    row.revoked_at = db.scalar(select(func.clock_timestamp()))
     issued = new_session(db, user, row.token_family_id, row.expires_at)
     audit(db, user.id, 'REFRESH_ROTATED', issued.session_id)
     db.commit()

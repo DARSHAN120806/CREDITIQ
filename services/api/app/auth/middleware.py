@@ -1,7 +1,41 @@
 from fastapi import HTTPException, Request
 from starlette.responses import JSONResponse
+import logging
 
 from app.auth.dependencies import require_csrf
+
+
+class TransportSafetyMiddleware:
+    """Reject insecure deployed requests and keep unexpected errors out of server logs."""
+    def __init__(self, app, https_only=False):
+        self.app, self.https_only = app, https_only
+
+    async def __call__(self, scope, receive, send):
+        if scope['type'] != 'http':
+            return await self.app(scope, receive, send)
+        # Orchestrators probe health over private HTTP before routing TLS traffic.
+        health_probe = scope['method'] == 'GET' and scope['path'] in (
+            '/health/live', '/health/ready', '/api/v1/health/live', '/api/v1/health/ready')
+        if self.https_only and scope.get('scheme') != 'https' and not health_probe:
+            return await JSONResponse({'detail': 'HTTPS required'}, status_code=400)(scope, receive, send)
+        started = False
+
+        async def secure_send(message):
+            nonlocal started
+            if message['type'] == 'http.response.start':
+                started = True
+                headers = list(message['headers'])
+                headers.append((b'x-content-type-options', b'nosniff'))
+                if self.https_only:
+                    headers.append((b'strict-transport-security', b'max-age=31536000'))
+                message = {**message, 'headers': headers}
+            await send(message)
+        try:
+            await self.app(scope, receive, secure_send)
+        except Exception as error:
+            logging.getLogger('uvicorn.error').error('request_failed type=%s', type(error).__name__)
+            if not started:
+                await JSONResponse({'detail': 'Internal server error'}, status_code=500)(scope, receive, secure_send)
 
 
 class AuthSafetyMiddleware:

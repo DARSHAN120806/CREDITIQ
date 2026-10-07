@@ -18,6 +18,20 @@ HASH = 'a' * 64
 NOW = datetime.now(timezone.utc)
 
 
+def test_migration_verification_snapshot_is_repeatable(engine):
+    from scripts.database_snapshot import snapshot
+
+    with engine.connect() as connection:
+        first = snapshot(connection)
+    with engine.connect() as connection:
+        second = snapshot(connection)
+    assert first == second
+    assert first['revision'] == '20261003_0003'
+    assert set(first['tables']) == set(Base.metadata.tables)
+    assert all(len(value['sha256']) == 64 and value['rows'] >= 0
+               for value in first['tables'].values())
+
+
 @pytest.fixture(scope='module')
 def engine():
     if os.environ.get('CREDITIQ_TEST_POSTGRES') != '1':
