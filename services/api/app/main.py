@@ -46,7 +46,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 logger.error('database_startup_failed')
                 raise RuntimeError('Database startup validation failed') from None
             logger.info('database_startup_connected hosting=%s', settings.db_hosting)
-            logger.info('startup_environment %s', json.dumps(environment_summary))
+            logger.info('startup_environment https_enforcement=%s %s',
+                        environment_summary['https_enforcement'], json.dumps(environment_summary))
             application.state.lite_model = LiteModel() if settings.lite_enabled else None
             yield
         finally:

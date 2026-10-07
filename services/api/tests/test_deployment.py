@@ -43,7 +43,7 @@ def test_safe_startup_summary_has_no_credentials():
     assert summary['cookie_secure'] is True
 
 
-def test_render_web_uses_edge_https_without_trusting_proxy_headers(monkeypatch):
+def test_render_web_uses_edge_https_without_trusting_proxy_headers(monkeypatch, caplog):
     monkeypatch.setenv('RENDER', 'true')
     monkeypatch.setenv('RENDER_SERVICE_TYPE', 'web')
     settings = deployment(trusted_proxy_ips=None, lite_enabled=False)
@@ -52,10 +52,12 @@ def test_render_web_uses_edge_https_without_trusting_proxy_headers(monkeypatch):
     with patch('app.main.build_engine') as build_engine:
         connection = build_engine.return_value.connect.return_value.__enter__.return_value
         connection.execute.return_value.scalar_one.return_value = False
-        with TestClient(create_app(settings), base_url='http://api.example.com') as client:
-            response = client.get('/api/v1/me', headers={'X-Forwarded-Proto': 'https'})
-            assert response.status_code == 401  # Auth still runs behind Render's HTTP hop.
-            assert response.headers['strict-transport-security'] == 'max-age=31536000'
+        with caplog.at_level('INFO', logger='uvicorn.error'):
+            with TestClient(create_app(settings), base_url='http://api.example.com') as client:
+                response = client.get('/api/v1/me', headers={'X-Forwarded-Proto': 'https'})
+                assert response.status_code == 401  # Auth still runs behind Render's HTTP hop.
+                assert response.headers['strict-transport-security'] == 'max-age=31536000'
+    assert 'https_enforcement=render_edge' in caplog.text
 
     with patch('app.core.config.Settings', return_value=settings), patch('uvicorn.run') as run:
         runpy.run_module('scripts.start_server', run_name='__main__')
